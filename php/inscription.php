@@ -17,7 +17,7 @@ if (isset($_SESSION['user'])){
 
 // si formulaire soumis, traitement de la demande d'inscription
 if (isset($_POST['btnInscription'])) {
-    $erreurs = eml_traitement_inscription();
+    $erreurs = ll_traitement_inscription();
 }
 else{
     $erreurs = FALSE;
@@ -26,7 +26,7 @@ else{
 // génération de la page
 ll_aff_entete('Inscription', 'Inscription');
 
-eml_aff_formulaire($erreurs);
+ll_aff_formulaire($erreurs);
 
 ll_aff_pied();
 
@@ -42,7 +42,7 @@ ob_end_flush(); //FIN DU SCRIPT
  *  @param mixed    $erreurs
  *  @global array   $_POST
  */
-function eml_aff_formulaire($erreurs) {
+function ll_aff_formulaire($erreurs) {
 
     $anneeCourante = (int) date('Y');
 
@@ -131,7 +131,7 @@ function eml_aff_formulaire($erreurs) {
  *  @global array    $_SESSION
  *  @return array    un tableau contenant les erreurs s'il y en a
  */
-function eml_traitement_inscription() {
+function ll_traitement_inscription() {
 
     /*
     * Toutes les erreurs détectées qui nécessitent une modification du code HTML sont considérées comme des tentatives de piratage
@@ -164,8 +164,8 @@ function eml_traitement_inscription() {
     // vérification des noms et prénoms
     $nom = trim($_POST['nom']);
     $prenom = trim($_POST['prenom']);
-    eml_verifier_texte($nom, 'Le nom', $erreurs, LMAX_NOM);
-    eml_verifier_texte($prenom, 'Le prénom', $erreurs, LMAX_PRENOM);
+    ll_verifier_texte($nom, 'Le nom', $erreurs, LMAX_NOM);
+    ll_verifier_texte($prenom, 'Le prénom', $erreurs, LMAX_PRENOM);
 
     // vérification de la date
     if (! (ll_est_entier($_POST['naissance_j']) && ll_est_entre($_POST['naissance_j'], 1, 31))){
@@ -311,7 +311,7 @@ function eml_traitement_inscription() {
  * @param  array        $erreurs tableau dans lequel les erreurs sont ajoutées
  * @param  int          $long longueur maximale du champ correspondant dans la base de données
  */
-function eml_verifier_texte($texte, $nom, &$erreurs, $long = -1){
+function ll_verifier_texte($texte, $nom, &$erreurs, $long = -1){
     mb_regex_encoding ('UTF-8'); //définition de l'encodage des caractères pour les expressions rationnelles multi-octets
     if (empty($texte)){
         $erreurs[] = "$nom ne doit pas être vide.";

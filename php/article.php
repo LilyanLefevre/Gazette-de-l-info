@@ -20,7 +20,7 @@ if (!ll_parametres_controle('get', array(), array('id'))) {
 ll_aff_entete('L\'actu', 'L\'actu');
 
 // affichage du contenu (article + commentaires)
-eml_aff_article();
+ll_aff_article();
 
 // pied de page
 ll_aff_pied();
@@ -32,16 +32,16 @@ ob_end_flush();
 /**
  * Affichage de l'article et de ses commentaires
  */
-function eml_aff_article() {
+function ll_aff_article() {
 
     // vérification du format du paramètre dans l'URL
     if (!isset($_GET['id'])) {
-        eml_aff_erreur ('Identifiant d\'article non fourni.');
+        ll_aff_erreur ('Identifiant d\'article non fourni.');
         return;     // ==> fin de la fonction
     }
 
     if (!ll_est_entier($_GET['id']) || $_GET['id'] <= 0) {
-        eml_aff_erreur ('Identifiant d\'article invalide.');
+        ll_aff_erreur ('Identifiant d\'article invalide.');
         return;     // ==> fin de la fonction
     }
     $id = (int)$_GET['id'];
@@ -62,7 +62,7 @@ function eml_aff_article() {
 
     // pas d'articles --> fin de la fonction
     if (mysqli_num_rows($res) == 0) {
-        eml_aff_erreur ('Identifiant d\'article non reconnu.');
+        ll_aff_erreur ('Identifiant d\'article non reconnu.');
         mysqli_free_result($res);
         mysqli_close($bd);
         return;         // ==> fin de la fonction
@@ -78,7 +78,7 @@ function eml_aff_article() {
     // Mise en forme du prénom et du nom de l'auteur pour affichage dans le pied du texte de l'article
     // Par exemple, pour 'johnny' 'bigOUde', ça donne 'J. Bigoude'
     // A faire avant la protection avec htmlentities() à cause des éventuels accents
-    $auteur = eml_mb_ucfirst_lcremainder(mb_substr($tab['utPrenom'], 0, 1, 'UTF-8')) . '. ' . eml_mb_ucfirst_lcremainder($tab['utNom']);
+    $auteur = ll_mb_ucfirst_lcremainder(mb_substr($tab['utPrenom'], 0, 1, 'UTF-8')) . '. ' . ll_mb_ucfirst_lcremainder($tab['utNom']);
 
     // protection contre les attaques XSS
     $auteur = ll_html_proteger_sortie($auteur);
@@ -100,11 +100,11 @@ function eml_aff_article() {
             // sinon on affiche uniquement $auteur
             ((isset($tab['rePseudo']) && ($tab['utStatut'] == 1 || $tab['utStatut'] == 3)) ?
             "<a href='../php/redaction.php#{$tab['utPseudo']}'>$auteur</a>" : $auteur),
-            '. Publié le ', eml_date_to_string($tab['arDatePublication']);
+            '. Publié le ', ll_date_to_string($tab['arDatePublication']);
 
     // ajout dans le pied d'article d'une éventuelle date de modification
     if (isset($tab['arDateModification'])) {
-        echo ', modifié le '. eml_date_to_string($tab['arDateModification']);
+        echo ', modifié le '. ll_date_to_string($tab['arDateModification']);
     }
 
     // fin du bloc <article>
@@ -124,9 +124,9 @@ function eml_aff_article() {
         while ($tab = mysqli_fetch_assoc($res)) {
             echo '<li>',
                     '<p>Commentaire de <strong>', ll_html_proteger_sortie($tab['coAuteur']), '</strong>, le ',
-                        eml_date_to_string($tab['coDate']),
+                        ll_date_to_string($tab['coDate']),
                     '</p>',
-                    '<blockquote>', ll_html_proteger_sortie($tab['coTexte']), '</blockquote>', 
+                    '<blockquote>', ll_html_proteger_sortie($tab['coTexte']), '</blockquote>',
                 '</li>';
         }
         echo '</ul>';
@@ -159,7 +159,7 @@ function eml_aff_article() {
  *  @param  int     $date   la date à afficher.
  *  @return string          la chaîne qui reprsente la date
  */
-function eml_date_to_string($date) {
+function ll_date_to_string($date) {
     // les champs date (coDate, arDatePublication, arDateModification) sont de type BIGINT dans la base de données
     // donc pas besoin de les protéger avec htmlentities()
 
@@ -170,7 +170,7 @@ function eml_date_to_string($date) {
     $mois = substr($date, -8, 2);
     $annee = substr($date, 0, -8);
 
-    $month = ll_get_tableau_mois();    
+    $month = ll_get_tableau_mois();
 
     return $jour. ' '. mb_strtolower($month[$mois - 1], 'UTF-8'). ' '. $annee . ' à ' . $heure . 'h' . $min;
     // mb_* -> pour l'UTF-8, voir : https://www.php.net/manual/fr/function.mb-strtolower.php
@@ -184,7 +184,7 @@ function eml_date_to_string($date) {
  * @param  string   $str    la chaîne à transformer
  * @return string           la chaîne résultat
  */
-function eml_mb_ucfirst_lcremainder($str) {
+function ll_mb_ucfirst_lcremainder($str) {
     $str = mb_strtolower($str, 'UTF-8');
     $fc = mb_strtoupper(mb_substr($str, 0, 1, 'UTF-8'));
     return $fc.mb_substr($str, 1, mb_strlen($str), 'UTF-8');
@@ -195,7 +195,7 @@ function eml_mb_ucfirst_lcremainder($str) {
  *  Affchage d'un message d'erreur dans une zone dédiée de la page.
  *  @param  String  $msg    le message d'erreur à afficher.
  */
-function eml_aff_erreur($msg) {
+function ll_aff_erreur($msg) {
     echo '<main>',
             '<section>',
                 '<h2>Oups, il y a une erreur...</h2>',
