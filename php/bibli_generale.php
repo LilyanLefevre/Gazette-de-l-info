@@ -1,10 +1,10 @@
 <?php
 
 /*********************************************************
- *        Bibliothèque de fonctions génériques          
- * 
+ *        Bibliothèque de fonctions génériques
+ *
  * Les régles de nommage sont les suivantes.
- * Les fonctions commencent par le préfixe em (cf e-ric m-erlet) 
+ * Les fonctions commencent par le préfixe em (cf e-ric m-erlet)
  * pour les différencier des fonctions php.
  *
  * Généralement on trouve ensuite un terme définisant le "domaine" de la fonction :
@@ -15,19 +15,19 @@
  *********************************************************/
 
 //____________________________________________________________________________
-/** 
+/**
  *  Ouverture de la connexion à la base de données
  *  En cas d'erreur de connexion le script est arrêté.
  *
  *  @return objet   connecteur à la base de données
  */
-function em_bd_connecter() {
+function ll_bd_connecter() {
     $conn = mysqli_connect(BD_SERVER, BD_USER, BD_PASS, BD_NAME);
     if ($conn !== FALSE) {
         //mysqli_set_charset() définit le jeu de caractères par défaut à utiliser lors de l'envoi
         //de données depuis et vers le serveur de base de données.
-        mysqli_set_charset($conn, 'utf8') 
-        or em_bd_erreur_exit('<h4>Erreur lors du chargement du jeu de caractères utf8</h4>');
+        mysqli_set_charset($conn, 'utf8')
+        or ll_bd_erreur_exit('<h4>Erreur lors du chargement du jeu de caractères utf8</h4>');
         return $conn;     // ===> Sortie connexion OK
     }
     // Erreur de connexion
@@ -40,14 +40,14 @@ function em_bd_connecter() {
             .'<br>BD_NAME : '. BD_NAME
             .'<p>Erreur MySQL numéro : '.mysqli_connect_errno()
             //appel de htmlentities() pour que les éventuels accents s'affiche correctement
-            .'<br>'.htmlentities(mysqli_connect_error(), ENT_QUOTES, 'ISO-8859-1')  
+            .'<br>'.htmlentities(mysqli_connect_error(), ENT_QUOTES, 'ISO-8859-1')
             .'</div>';
-    em_bd_erreur_exit($msg);
+    ll_bd_erreur_exit($msg);
 }
 
 //____________________________________________________________________________
 /**
- * Arrêt du script si erreur base de données 
+ * Arrêt du script si erreur base de données
  *
  * Affichage d'un message d'erreur, puis arrêt du script
  * Fonction appelée quand une erreur 'base de données' se produit :
@@ -56,7 +56,7 @@ function em_bd_connecter() {
  *
  * @param string    $msg    Message d'erreur à afficher
  */
-function em_bd_erreur_exit($msg) {
+function ll_bd_erreur_exit($msg) {
     ob_end_clean(); // Suppression de tout ce qui a pu être déja généré
 
     echo    '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">',
@@ -74,13 +74,13 @@ function em_bd_erreur_exit($msg) {
 /**
  * Gestion d'une erreur de requête à la base de données.
  *
- * A appeler impérativement quand un appel de mysqli_query() échoue 
- * Appelle la fonction em_bd_erreurExit() qui affiche un message d'erreur puis termine le script
+ * A appeler impérativement quand un appel de mysqli_query() échoue
+ * Appelle la fonction ll_bd_erreurExit() qui affiche un message d'erreur puis termine le script
  *
  * @param objet     $bd     Connecteur sur la bd ouverte
  * @param string    $sql    requête SQL provoquant l'erreur
  */
-function em_bd_erreur($bd, $sql) {
+function ll_bd_erreur($bd, $sql) {
     $errNum = mysqli_errno($bd);
     $errTxt = mysqli_error($bd);
 
@@ -106,12 +106,12 @@ function em_bd_erreur($bd, $sql) {
 
     $msg .= '</table>';
 
-    em_bd_erreur_exit($msg);    // ==> ARRET DU SCRIPT
+    ll_bd_erreur_exit($msg);    // ==> ARRET DU SCRIPT
 }
 
 
 
-/** 
+/**
  *  Protection des sorties (code HTML généré à destination du client).
  *
  *  Fonction à appeler pour toutes les chaines provenant de :
@@ -121,17 +121,17 @@ function em_bd_erreur($bd, $sql) {
  *  Convertit tous les caractères éligibles en entités HTML, notamment :
  *      - les caractères ayant une signification spéciales en HTML (<, >, ", ', ...)
  *      - les caractères accentués
- * 
- *  Si on lui transmet un tableau, la fonction renvoie un tableau où toutes les chaines
- *  qu'il contient sont protégées, les autres données du tableau ne sont pas modifiées. 
  *
- *  @param  mixed  $content   la chaine à protéger ou un tableau contenant des chaines à protéger 
+ *  Si on lui transmet un tableau, la fonction renvoie un tableau où toutes les chaines
+ *  qu'il contient sont protégées, les autres données du tableau ne sont pas modifiées.
+ *
+ *  @param  mixed  $content   la chaine à protéger ou un tableau contenant des chaines à protéger
  *  @return mixed             la chaîne protégée ou le tableau
  */
-function em_html_proteger_sortie($content) {
+function ll_html_proteger_sortie($content) {
     if (is_array($content)) {
         foreach ($content as &$value) {
-            $value = em_html_proteger_sortie($value);   
+            $value = ll_html_proteger_sortie($value);   
         }
         unset ($value); // à ne pas oublier (de façon générale)
         return $content;
@@ -149,7 +149,7 @@ function em_html_proteger_sortie($content) {
  * @param mixed     $x  valeur à tester
  * @return boolean  TRUE si entier, FALSE sinon
  */
-function em_est_entier($x) {
+function ll_est_entier($x) {
     return is_numeric($x) && ($x == (int) $x);
 }
 
@@ -160,7 +160,7 @@ function em_est_entier($x) {
  * @param integer   $x  nombre ‡ tester
  * @return boolean  TRUE si ok, FALSE sinon
  */
-function em_est_entre($x, $min, $max) {
+function ll_est_entre($x, $min, $max) {
     return ($x >= $min) && ($x <= $max);
 }
 
@@ -171,7 +171,7 @@ function em_est_entre($x, $min, $max) {
  *
  * @return array    Tableau à indices numériques contenant les noms des mois
  */
-function em_get_tableau_mois(){
+function ll_get_tableau_mois(){
     return array('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
 }
 
@@ -179,17 +179,17 @@ function em_get_tableau_mois(){
 /**
  * Contrôle des clés présentes dans les tableaux $_GET ou $_POST - piratage ?
  *
- * Cette fonction renvoie false en présence d'une suspicion de piratage 
+ * Cette fonction renvoie false en présence d'une suspicion de piratage
  * et true quand il n'y a pas de problème détecté.
  *
- * Soit $x l'ensemble des clés contenues dans $_GET ou $_POST 
+ * Soit $x l'ensemble des clés contenues dans $_GET ou $_POST
  * L'ensemble des clés obligatoires doit être inclus dans $x.
- * De même $x doit être inclus dans l'ensemble des clés autorisées, formé par l'union de l'ensemble 
+ * De même $x doit être inclus dans l'ensemble des clés autorisées, formé par l'union de l'ensemble
  * des clés facultatives et de l'ensemble des clés obligatoires.
  * Si ces 2 conditions sont vraies, la fonction renvoie true, sinon, elle renvoie false.
- * Dit autrement, la fonction renvoie false si une clé obligatoire est absente ou 
+ * Dit autrement, la fonction renvoie false si une clé obligatoire est absente ou
  * si une clé non autorisée est présente; elle renvoie true si "tout va bien"
- * 
+ *
  * @param string    $tab_global 'post' ou 'get'
  * @param array     $cles_obligatoires tableau contenant les clés qui doivent obligatoirement être présentes
  * @param array     $cles_facultatives tableau contenant les clés facultatives
@@ -197,7 +197,7 @@ function em_get_tableau_mois(){
  * @global array    $_POST
  * @return boolean  true si les paramètres sont corrects, false sinon
  */
-function em_parametres_controle($tab_global, $cles_obligatoires, $cles_facultatives = array()){
+function ll_parametres_controle($tab_global, $cles_obligatoires, $cles_facultatives = array()){
     $x = strtolower($tab_global) == 'post' ? $_POST : $_GET;
 
     $x = array_keys($x);
@@ -209,7 +209,7 @@ function em_parametres_controle($tab_global, $cles_obligatoires, $cles_facultati
     if (count(array_diff($x, array_merge($cles_obligatoires,$cles_facultatives))) > 0){
         return false;
     }
-    
+
     return true;
 }
 
@@ -218,10 +218,10 @@ function em_parametres_controle($tab_global, $cles_obligatoires, $cles_facultati
  * Affiche une liste déroulante à partir des options passées en paramètres.
  *
  * @param string    $nom       Le nom de la liste déroulante (valeur de l'attribut name)
- * @param array     $options   Un tableau associatif donnant la liste des options sous la forme valeur => libelle 
- * @param string    $default   La valeur qui doit être sélectionnée par défaut. 
+ * @param array     $options   Un tableau associatif donnant la liste des options sous la forme valeur => libelle
+ * @param string    $default   La valeur qui doit être sélectionnée par défaut.
  */
-function em_aff_liste($nom, $options, $defaut) {
+function ll_aff_liste($nom, $options, $defaut) {
     echo '<select name="', $nom, '">';
     foreach ($options as $valeur => $libelle) {
         echo '<option value="', $valeur, '"', (($defaut == $valeur) ? ' selected' : '') ,'>', $libelle, '</option>';
@@ -236,15 +236,15 @@ function em_aff_liste($nom, $options, $defaut) {
  * @param string    $nom       Le nom de la liste déroulante (valeur de l'attribut name)
  * @param int       $default   Le mois qui doit être sélectionné par défaut (1 pour janvier)
  */
-function em_aff_liste_mois($nom, $defaut) {
-    $mois = em_get_tableau_mois();
+function ll_aff_liste_mois($nom, $defaut) {
+    $mois = ll_get_tableau_mois();
     $m = array();
     foreach ($mois as $k => $v) {
-        $m[$k+1] = mb_strtolower($v, 'UTF-8');   
+        $m[$k+1] = mb_strtolower($v, 'UTF-8');
         // comme on est en UTF-8 on utilise la fonction mb_strtolower
         // voir : https://www.php.net/manual/fr/function.mb-strtolower.php
     }
-    em_aff_liste($nom, $m, $defaut);
+    ll_aff_liste($nom, $m, $defaut);
 }
 
 //___________________________________________________________________
@@ -253,11 +253,11 @@ function em_aff_liste_mois($nom, $defaut) {
  *
  * @param string    $nom       Le nom de la liste déroulante (valeur de l'attribut name)
  * @param int       $min       La valeur minimale de la liste
- * @param int       $max       La valeur maximale de la liste 
- * @param int       $pas       Le pas d'itération (si positif, énumération croissante, sinon décroissante) 
- * @param int       $default   La valeur qui doit être sélectionnée par défaut. 
+ * @param int       $max       La valeur maximale de la liste
+ * @param int       $pas       Le pas d'itération (si positif, énumération croissante, sinon décroissante)
+ * @param int       $default   La valeur qui doit être sélectionnée par défaut.
  */
-function em_aff_liste_nombre($nom, $min, $max, $pas, $defaut) {
+function ll_aff_liste_nombre($nom, $min, $max, $pas, $defaut) {
     echo '<select name="', $nom, '">';
     if ($pas > 0) {
         for ($i=$min; $i <= $max; $i += $pas) {
@@ -288,13 +288,13 @@ function em_aff_liste_nombre($nom, $min, $max, $pas, $defaut) {
  * @param int       $j_s            Le jour sélectionné
  * @param int       $m_s            Le mois sélectionné (1 pour janvier)
  * @param int       $a_s            L'année sélectionnée
- * @param int       $pas_annee      Le pas d'itération de l'année (si positif, énumération croissante, sinon décroissante) 
+ * @param int       $pas_annee      Le pas d'itération de l'année (si positif, énumération croissante, sinon décroissante)
  */
-function em_aff_listes_date($name, $annee_min, $annee_max, $j_s = 0, $m_s = 0, $a_s = 0, $pas_annee = -1){ 
+function ll_aff_listes_date($name, $annee_min, $annee_max, $j_s = 0, $m_s = 0, $a_s = 0, $pas_annee = -1){ 
     list($jj, $mm, $aa) = explode('-', date('j-n-Y'));
-    em_aff_liste_nombre("{$name}_j", 1, 31, 1, $j_s ? $j_s : $jj);
-    em_aff_liste_mois("{$name}_m", $m_s ? $m_s : $mm);
-    em_aff_liste_nombre("{$name}_a", $annee_min, $annee_max, $pas_annee, $a_s ? $a_s : $aa);
+    ll_aff_liste_nombre("{$name}_j", 1, 31, 1, $j_s ? $j_s : $jj);
+    ll_aff_liste_mois("{$name}_m", $m_s ? $m_s : $mm);
+    ll_aff_liste_nombre("{$name}_a", $annee_min, $annee_max, $pas_annee, $a_s ? $a_s : $aa);
 }
 
 //___________________________________________________________________
@@ -312,11 +312,11 @@ function em_aff_listes_date($name, $annee_min, $annee_max, $j_s = 0, $m_s = 0, $
  * @param int       $j_s            Le jour sélectionné
  * @param int       $m_s            Le mois sélectionné (1 pour janvier)
  * @param int       $a_s            L'année sélectionnée
- * @param int       $pas_annee      Le pas d'itération de l'année (si positif, énumération croissante, sinon décroissante) 
+ * @param int       $pas_annee      Le pas d'itération de l'année (si positif, énumération croissante, sinon décroissante)
  */
-function em_aff_ligne_date($libelle, $name, $annee_debut, $annee_fin, $j_s = 0, $m_s = 0, $a_s = 0, $pas_annee = -1){
+function ll_aff_ligne_date($libelle, $name, $annee_debut, $annee_fin, $j_s = 0, $m_s = 0, $a_s = 0, $pas_annee = -1){
     echo '<tr>', '<td>', $libelle, '</td>', '<td>';
-    em_aff_listes_date($name, $annee_debut, $annee_fin, $j_s, $m_s, $a_s, $pas_annee);
+    ll_aff_listes_date($name, $annee_debut, $annee_fin, $j_s, $m_s, $a_s, $pas_annee);
     echo '</td>', '</tr>';
 }
 
@@ -326,7 +326,7 @@ function em_aff_ligne_date($libelle, $name, $annee_debut, $annee_fin, $j_s = 0, 
  * Affiche une ligne d'un tableau permettant la saisie d'un champ input de type 'text', 'password' ou 'email'
  *
  * La ligne est constituée de 2 cellules :
- * - la 1ère cellule contient un label permettant un "contrôle étiqueté" de l'input 
+ * - la 1ère cellule contient un label permettant un "contrôle étiqueté" de l'input
  * - la 2ème cellule contient l'input
  *
  * @param string    $type           Le type de l'input : 'text', 'password' ou 'email'
@@ -336,11 +336,11 @@ function em_aff_ligne_date($libelle, $name, $annee_debut, $annee_fin, $j_s = 0, 
  * @param array     $attributs      Un tableau associatif donnant les attributs de l'input sous la forme nom => valeur
  * @param string    $prefix_id      Le préfixe utilisé pour l'id de l'input, ce qui donne un id égal à {$prefix_id}{$name}
  */
-function em_aff_ligne_input($type, $libelle, $name, $value = '', $attributs = array(), $prefix_id = 'text'){
-    echo    '<tr>', 
+function ll_aff_ligne_input($type, $libelle, $name, $value = '', $attributs = array(), $prefix_id = 'text'){
+    echo    '<tr>',
                 '<td><label for="', $prefix_id, $name, '">', $libelle, '</label></td>',
-                '<td><input type="', $type, '" name="', $name, '" id="', $prefix_id, $name, '" value="', $value,'"'; 
-                
+                '<td><input type="', $type, '" name="', $name, '" id="', $prefix_id, $name, '" value="', $value,'"';
+
     foreach ($attributs as $cle => $value){
         echo ' ', $cle, ($value ? "='{$value}'" : '');
     }
@@ -352,13 +352,13 @@ function em_aff_ligne_input($type, $libelle, $name, $value = '', $attributs = ar
  * Affiche un groupe de boutons radio contenu dans un élément label
  *
  * @param string    $name           Le nom des input de type radio
- * @param array     $options        Un tableau associatif donnant la liste des choix possibles sous la forme valeur => libelle 
- * @param mixed     $default        La valeur qui doit être sélectionnée par défaut. 
+ * @param array     $options        Un tableau associatif donnant la liste des choix possibles sous la forme valeur => libelle
+ * @param mixed     $default        La valeur qui doit être sélectionnée par défaut.
  * @param array     $attributs      Un tableau associatif donnant les attributs de l'input sous la forme nom => valeur
  */
-function em_aff_input_radio($name, $options, $defaut, $attributs = array()){
+function ll_aff_input_radio($name, $options, $defaut, $attributs = array()){
     foreach ($options as $valeur => $libelle){
-        echo '<label><input type="radio" name="', $name, '" value="', $valeur, '"', 
+        echo '<label><input type="radio" name="', $name, '" value="', $valeur, '"',
         ($valeur == $defaut ? ' checked' : '');
         foreach ($attributs as $cle => $value){
             echo ' ', $cle, ($value ? "='{$value}'" : '');
@@ -373,15 +373,15 @@ function em_aff_input_radio($name, $options, $defaut, $attributs = array()){
  *
  * @param string    $libelle        Le libellé associé aux boutons radio
  * @param string    $name           Le nom des input de type radio
- * @param array     $options        Un tableau associatif donnant la liste des choix possibles sous la forme valeur => libelle 
- * @param mixed     $default        La valeur qui doit être sélectionnée par défaut. 
+ * @param array     $options        Un tableau associatif donnant la liste des choix possibles sous la forme valeur => libelle
+ * @param mixed     $default        La valeur qui doit être sélectionnée par défaut.
  * @param array     $attributs      Un tableau associatif donnant les attributs de l'input sous la forme nom => valeur
  */
-function em_aff_ligne_input_radio($libelle, $name, $options, $defaut, $attributs = array()){
+function ll_aff_ligne_input_radio($libelle, $name, $options, $defaut, $attributs = array()){
     echo '<tr>',
             '<td>', $libelle, '</td>',
             '<td>';
-    em_aff_input_radio($name, $options, $defaut, $attributs);
+    ll_aff_input_radio($name, $options, $defaut, $attributs);
     echo '</td></tr>';
 }
 
@@ -394,7 +394,7 @@ function em_aff_ligne_input_radio($libelle, $name, $options, $defaut, $attributs
  * @param string    $value          La valeur de l'input
  * @param array     $attributs      Un tableau associatif donnant les attributs de l'input sous la forme nom => valeur
  */
-function em_aff_input_checkbox($libelle, $name, $value = 1, $attributs=array()){
+function ll_aff_input_checkbox($libelle, $name, $value = 1, $attributs=array()){
     echo '<label><input type="checkbox" name="', $name, '" value="', $value, '"';
     foreach ($attributs as $cle => $value){
         echo ' ', $cle, ($value ? "='{$value}'" : '');
