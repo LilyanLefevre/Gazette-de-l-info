@@ -88,12 +88,18 @@ function ll_aff_article() {
 
     $imgFile = "../upload/{$id}.jpg";
 
+    //remplace les [] par des <>
+    $art=$tab['arTexte'];
+    
+    $art=htmlspecialchars_decode($art);
+    $art=str_replace("[","<",$art);
+    $art=str_replace("]",">",$art);
 
     // génération du bloc <article>
     echo '<article>',
             '<h3>', $tab['arTitre'], '</h3>',
             ((file_exists($imgFile)) ? "<img src='{$imgFile}' alt=\"Photo d\'illustration | {$tab['arTitre']}\">" : ''),
-            $tab['arTexte'],
+            $art,
             '<footer>Par ',
             // si l'auteur a encore le droit de rédacteur et si il a enregistré des informations dans la table redacteur
             // on affiche un lien vers sa présentation sur la page redaction.php,

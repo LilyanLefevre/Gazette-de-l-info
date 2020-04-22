@@ -11,7 +11,7 @@ session_start();
 
 ll_aff_entete('Le site de désinformation n°1 des étudiants en Licence Info', '', '.');
 
-eml_aff_contenu();
+ll_aff_contenu();
 
 ll_aff_pied();
 
@@ -20,7 +20,7 @@ ob_end_flush();
 /**
  * Affichage du contenu principal de la page
  */
-function eml_aff_contenu() {
+function ll_aff_contenu() {
 
     $bd = ll_bd_connecter();
 
@@ -30,8 +30,8 @@ function eml_aff_contenu() {
     $sql0 = 'SELECT arID, arTitre FROM article
              ORDER BY arDatePublication DESC
              LIMIT 0, 3';
-    $tab0 = eml_bd_select_articles($bd, $sql0);
-    eml_aff_vignettes('&Agrave; la Une', $tab0);
+    $tab0 = ll_bd_select_articles($bd, $sql0);
+    ll_aff_vignettes('&Agrave; la Une', $tab0);
 
     // génération des 3 articles les plus commentés
     $sql1 = 'SELECT arID, arTitre
@@ -40,18 +40,18 @@ function eml_aff_contenu() {
              GROUP BY arID
              ORDER BY COUNT(coArticle) DESC, rand()
              LIMIT 0, 3';
-    $tab1 = eml_bd_select_articles($bd, $sql1);
-    eml_aff_vignettes('L\'info brûlante', $tab1);
+    $tab1 = ll_bd_select_articles($bd, $sql1);
+    ll_aff_vignettes('L\'info brûlante', $tab1);
 
     // génération des 3 articles parmi les articles restants
     $sql2 = 'SELECT arID, arTitre FROM article
              WHERE arID NOT IN (' . join(',',array_keys($tab0)) . ',' . join(',',array_keys($tab1)) . ')
              ORDER BY rand() LIMIT 0, 3';
-    $tab2 = eml_bd_select_articles($bd, $sql2);
-    eml_aff_vignettes('Les incontournables', $tab2);
+    $tab2 = ll_bd_select_articles($bd, $sql2);
+    ll_aff_vignettes('Les incontournables', $tab2);
 
     // affichage de l'horoscope
-    eml_aff_horoscope();
+    ll_aff_horoscope();
 
     mysqli_close($bd);
 
@@ -68,12 +68,12 @@ function eml_aff_contenu() {
  *  @param  String  $titre  le titre de la <section>
  *  @param  array   $tab    le tableau des enregistrements à afficher (issus de la table "article")
  */
-function eml_aff_vignettes($titre, $tab) {
+function ll_aff_vignettes($titre, $tab) {
 
     echo '<section class="centre"><h2>', $titre, '</h2>';
 
     foreach ($tab as $value) {
-        eml_aff_une_vignette($value);
+        ll_aff_une_vignette($value);
     }
 
     echo '</section>';
@@ -85,7 +85,7 @@ function eml_aff_vignettes($titre, $tab) {
  *  Affichage d'un article sous forme de vignette (image + titre de l'article)
  *  @param  array   $value  tableau associatif issu des enregistrements de la table "article"
  */
-function eml_aff_une_vignette($value) {
+function ll_aff_une_vignette($value) {
 
     $value = ll_html_proteger_sortie($value);
     $id = $value['arID'];
@@ -102,7 +102,7 @@ function eml_aff_une_vignette($value) {
  *  @param  Object  $bd     la connexion à la base de données
  *  @param  String  $sql    la requête SQL à considérer
  */
-function eml_bd_select_articles($bd, $sql) {
+function ll_bd_select_articles($bd, $sql) {
 
     // envoi de la requête au serveur de bases de données
     $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
@@ -123,7 +123,7 @@ function eml_bd_select_articles($bd, $sql) {
 /**
  *  Fonction générant l'horoscope (texte purement statique)
  */
-function eml_aff_horoscope() {
+function ll_aff_horoscope() {
     echo
          '<section>',
             '<h2>Horoscope de la semaine</h2>',
