@@ -1,4 +1,4 @@
-/* http://meyerweb.com/eric/tools/css/reset/ 
+﻿/* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
 */
@@ -12,8 +12,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
     margin: 0;
@@ -24,7 +24,7 @@ time, mark, audio, video {
     vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
     display: block;
 }
@@ -55,7 +55,7 @@ table {
 body {
     font-family: Trebuchet, arial, verdana, sans-serif;
     line-height: 1.2;
-    background: #EEE; 
+    background: #EEE;
     background: linear-gradient(to bottom right, #E0E0E0, #909090);
 }
 
@@ -114,7 +114,7 @@ p, blockquote {
 
 blockquote {
     font-style: italic;
-    padding: 5px 30px; 
+    padding: 5px 30px;
 }
 
 blockquote::before {
@@ -143,7 +143,7 @@ figure > iframe {
 }
 
 figcaption {
-    text-align: center;   
+    text-align: center;
 }
 
 /** ajout TP2 (appliquée aux 3 premières sections de la page index.html) **/
@@ -223,7 +223,7 @@ nav > ul > li:hover > ul {
 }
 
 /**********************************************************************
-                        EN-TETE 
+                        EN-TETE
 **********************************************************************/
 
 body > header {
@@ -251,20 +251,20 @@ body > footer {
     margin-bottom: 10px;
 }
 
-/****************************************************************** 
+/******************************************************************
                         Sections
 *******************************************************************/
 section {
     position: relative;
     margin: 50px 0 60px 0;
-    background-color: white;    
+    background-color: white;
     padding: 10px 20px;
     border-radius: 0 10px 10px 10px;
     box-shadow: 10px 10px 10px #000;
 }
 
 section:last-of-type {
-    margin-bottom: 30px;   
+    margin-bottom: 30px;
 }
 
 section > h2 {
@@ -302,7 +302,7 @@ main > article {
 /** Images dans l'article (taille + placement) */
 main > article img {
     float: right;
-    margin: 0 0 10px 15px; 
+    margin: 0 0 10px 15px;
     width: 250px;
     height: 187px;
 }
@@ -327,13 +327,13 @@ main > article ul  {
 
 /** Style des items des listes dans l'article */
 main > article ul li::before {
-    content: "\2611\00A0"; 
+    content: "\2611\00A0";
     font-size: 20px;
 }
 
 /** Style des items de la liste dans les commentaires de l'article */
 section > ul li {
-    margin-bottom: 20px;   
+    margin-bottom: 20px;
 }
 
 
@@ -342,17 +342,17 @@ section > ul li {
 *******************************************************************************/
 
 /*  TP2 : ajout de la classe "redacteur" pour les éléments article qui décrivent des rédacteurs
- * 
+ *
  * Explication : il y a, sur les pages actus.html et redaction.html, des éléments article qui ont comme parent un élément section.
  * Or, ces éléments article ont un style différent sur ces 2 pages (sauf les titres h3)
  * On leur attribue une classe différente pour que les styles appliquées à ces éléments soient séparés.
- * 
+ *
  * Les éléments article, qui décrivent le résumé d'un article sur la page actus.html, ont eux la classe "resume"
 */
 
 section article.redacteur {
     position: relative;
-    margin: 10px auto; 
+    margin: 10px auto;
     min-height: 200px;
 }
 
@@ -413,7 +413,7 @@ section h2 + article.resume:only-of-type {
 
 
 section article.resume img {
-    float: left; 
+    float: left;
     height: 120px;
     width: 160px;
     margin-right: 10px;
@@ -431,7 +431,7 @@ section article.resume footer {
 ****************************************************************************************/
 
 
-section > a[href], section > a[href]:visited{   
+section > a[href], section > a[href]:visited{
     display: inline-block;
     width: 270px;
     vertical-align: top;
@@ -448,14 +448,14 @@ section > a:not(:first-of-type):not(:last-of-type) {
     margin: 0 12px 0 12px;
 }
 
-section > a > img {   
+section > a > img {
     border: solid 1px #000;
     width: 250px;
     height: 187px;
     margin: 0 0 10px 0;
 }
 section > a:hover > img {
-    box-shadow: 0px 0px 20px red;   
+    box-shadow: 0px 0px 20px red;
 }
 
 
@@ -471,7 +471,7 @@ section > a:hover > img {
 }
 
 #horoscope tr {
-    height: 30px; 
+    height: 30px;
 }
 
 #horoscope td {
@@ -494,7 +494,7 @@ form input[type=text], form input[type=email], form input[type=password] {
 }
 
 form select {
-    margin: 0 2px;   
+    margin: 0 2px;
 }
 
 form table {
@@ -512,7 +512,7 @@ form td:first-child:not(:only-child) {
 }
 
 form td[colspan] {
-    text-align: center;   
+    text-align: center;
 }
 
 form td[colspan] label {
@@ -543,7 +543,7 @@ input[type=submit]:hover, input[type=reset]:hover {
 }
 
 .erreur {
-    color: red;
+    color: red
     font-size: 14px;
     font-weight: bold;
     width: 80%;
@@ -553,3 +553,25 @@ input[type=submit]:hover, input[type=reset]:hover {
     line-height: 1.5;
 }
 
+a[href].pages, a[href]:visited.pages{
+  color: black;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 1px;
+  margin-left: 2px;
+  margin-right: 2px;
+  background-color: #DDDCDC;
+  border-radius: 5px;
+  border: solid black 1px;
+  text-align: center;
+  width: 3em;
+  height: 10px;
+}
+a[href]:hover.pages, a[href]:visited:hover.pages{
+  color: black;
+  background-color: #A4A3A3;
+}
+
+.recherche{
+  text-align: center;
+}

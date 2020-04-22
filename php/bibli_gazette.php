@@ -88,7 +88,7 @@ function ll_aff_menu($pseudo='', $droits = array(false, false), $prefix = '..') 
  *  @param  string  $h1         Le titre dans le bandeau (<header>)
  *  @param  string  $prefix     Le chemin relatif vers le répertoire racine du site
  */
-function ll_aff_header($h1, $prefix='..'){             
+function ll_aff_header($h1, $prefix='..'){
     echo '<header>',
             '<img src="', $prefix, '/images/titre.png" alt="La gazette de L-INFO" width="780" height="83">',
             '<h1>', $h1, '</h1>',
@@ -198,6 +198,70 @@ function ll_session_exit($page = '../index.php') {
     exit();
 }
 
+//_______________________________________________________________
+/**
+ *  Calcule le résultat d'une requête SQL et place ceux-ci dans un tableau.
+ *  @param  Object  $bd     la connexion à la base de données
+ *  @param  String  $sql    la requête SQL à considérer
+ */
+function ll_bd_select_articles($bd, $sql) {
+
+    // envoi de la requête au serveur de bases de données
+    $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+
+    // tableau de résultat (à remplir)
+    $ret = array();
+
+    // parcours des résultats
+    while ($t = mysqli_fetch_assoc($res)) {
+        $ret[$t['arID']] = $t;
+    }
+
+    mysqli_free_result($res);
+
+    return $ret;
+}
+
+function bbcode_to_html($bbtext){
+  $bbtags = array(
+    '[h1]' => '<h1>','[/h1]' => '</h1>',
+    '[h2]' => '<h2>','[/h2]' => '</h2>',
+    '[h3]' => '<h3>','[/h3]' => '</h3>',
+
+    '[p]' => '<p>','[/p]' => '</p>',
+
+    '[it]' => '<em>','[/it]' => '</em>',
+    '[underline]' => '<span style="text-decoration:underline;">','[/underline]' => '</span>',
+    '[b]' => '<span style="font-weight:bold;">','[/b]' => '</span>',
+    '[u]' => '<span style="text-decoration:underline;">','[/u]' => '</span>',
+    '[br]' => '<br>',
+    '[citation]' => '<blockquote>', '[/citation]' => '</blockquote>',
+
+    '[liste]' => '<ul>','[/liste]' => '</ul>',
+
+    '[ordered_list]' => '<ol>','[/ordered_list]' => '</ol>',
+    '[ol]' => '<ol>','[/ol]' => '</ol>',
+    '[item]' => '<li>','[/item]' => '</li>',
+    '[li]' => '<li>','[/li]' => '</li>',
+
+    '[pre]' => '<pre>','[/pre]' => '</pre>',
+  );
+
+  $bbtext = str_ireplace(array_keys($bbtags), array_values($bbtags), $bbtext);
+
+  $bbextended = array(
+    "/\[youtube:(.*?):(.*?):(.*?)\s(.*?)\]/i" => "<figure><iframe width=\"$1\" height=\"$2\" src=\"$3\" allowfullscreen></iframe> <figcaption>$4</figcaption></figure>" ,
+    "/\[a:mailto:(.*?)\](.*?)\[\/a\]/i" => "<a href=\"mailto:$1\">$2</a>",
+    "/\[a:https:(.*?)\](.*?)\[\/a\]/i" => "<a href=\"https:$1\" title=\"$2\">$2</a>",
+    "/\[#(.*?)\]/i" => "&#$1",
+
+  );
+
+  foreach($bbextended as $match=>$replacement){
+    $bbtext = preg_replace($match, $replacement, $bbtext);
+  }
+  return $bbtext;
+}
 
 
 

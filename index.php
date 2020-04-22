@@ -96,29 +96,7 @@ function ll_aff_une_vignette($value) {
             '</a>';
 }
 
-//_______________________________________________________________
-/**
- *  Calcule le résultat d'une requête SQL et place ceux-ci dans un tableau.
- *  @param  Object  $bd     la connexion à la base de données
- *  @param  String  $sql    la requête SQL à considérer
- */
-function ll_bd_select_articles($bd, $sql) {
 
-    // envoi de la requête au serveur de bases de données
-    $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
-
-    // tableau de résultat (à remplir)
-    $ret = array();
-
-    // parcours des résultats
-    while ($t = mysqli_fetch_assoc($res)) {
-        $ret[$t['arID']] = $t;
-    }
-
-    mysqli_free_result($res);
-
-    return $ret;
-}
 
 /**
  *  Fonction générant l'horoscope (texte purement statique)
