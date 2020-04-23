@@ -586,7 +586,8 @@ td.bio{
     font-weight: bold;
     width: 80%;
     margin: 10px auto;
-    border: solid 2px red;
+    border: solid 2px green;
     padding: 5px;
     line-height: 1.5;
+    text-align: center;
 }

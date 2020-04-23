@@ -3,7 +3,7 @@
 require_once('bibli_gazette.php');
 require_once('bibli_generale.php');
 
-// bufferisation des sorties            //////////////////////verifier des cle dans l'url avec parametres controle
+// bufferisation des sorties
 ob_start();
 
 // démarrage de la session
@@ -17,9 +17,17 @@ ll_p_controle();
 
 $bd = ll_bd_connecter();
 
+$successInfoPerso=0;
+$successMdp=0;
+$successRedac=0;
+$successImg=0;
+
 // si premiere partie soumise, traitement
 if (isset($_POST['btnInfoPerso'])) {
     $erreursInfoPerso = ll_traitement_info_perso($bd);
+    if(empty($erreursInfoPerso)==true){
+      $successInfoPerso=1;
+    }
 }
 else{
     $erreursInfoPerso = FALSE;
@@ -28,6 +36,9 @@ else{
 // si premiere partie soumise, traitement
 if (isset($_POST['btnMdp'])) {
     $erreursMdp = ll_traitement_mdp($bd);
+    if(empty($erreursMdp)){
+      $successMdp=1;
+    }
 }
 else{
     $erreursMdp = FALSE;
@@ -37,6 +48,9 @@ else{
 // si premiere partie soumise, traitement
 if (isset($_POST['btnRedac'])) {
     $erreursRedac = ll_traitement_redac($bd);
+    if(empty($erreursRedac)){
+      $successRedac=1;
+    }
 }
 else{
     $erreursRedac = FALSE;
@@ -45,6 +59,9 @@ else{
 // si premiere partie soumise, traitement
 if (isset($_POST['btnImg'])) {
     $erreursImg = ll_traitement_img($bd);
+    if(empty($erreursImg)){
+      $successImg=1;
+    }
 }
 else{
     $erreursImg = FALSE;
@@ -90,6 +107,8 @@ function ll_p_controle(){
  *  @global array   $_POST
  */
 function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
+    global $successInfoPerso;
+
     $anneeCourante = (int) date('Y');
 
     // affectation des valeurs à afficher dans les zones du formulaire
@@ -135,6 +154,11 @@ function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
         }
         echo '</ul></div>';
     }
+    if($successInfoPerso==1){
+      echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
+      echo '</ul></div>';
+    }
+
 
     echo '<table>';
     ll_aff_ligne_input_radio('Votre civilité :', 'radSexe', array(1 => 'Monsieur', 2 => 'Madame'), $civilite, array('required' => 0));
@@ -168,6 +192,7 @@ function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
 
 //fonction qui affiche le formulaire pour changer de mot de passe
 function ll_aff_formulaire_mdp($erreursMdp){
+  global $successMdp;
   /* Des attributs required ont été ajoutés sur tous les champs que l'utilisateur doit obligatoirement remplir */
   echo
       '<section>',
@@ -182,7 +207,13 @@ function ll_aff_formulaire_mdp($erreursMdp){
           echo '<li>', $err, '</li>';
       }
       echo '</ul></div>';
+
   }
+  if($successMdp==1){
+    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
+    echo '</ul></div>';
+  }
+
 
   echo '<table>';
   ll_aff_ligne_input('password', 'Choisissez un mot de passe :', 'passe1', '', array('required' => 0));
@@ -205,6 +236,7 @@ function ll_aff_formulaire_mdp($erreursMdp){
 
 //fonction qui affiche le formulaire pour changer ses infos de redacteur
 function ll_aff_formulaire_redac($erreursRedac,$user){
+  global $successRedac;
   // affectation des valeurs à afficher dans les zones du formulaire
   if (isset($_POST['btnRedac'])){
       $bio = ll_html_proteger_sortie(trim($_POST['bio']));
@@ -230,6 +262,11 @@ function ll_aff_formulaire_redac($erreursRedac,$user){
       }
       echo '</ul></div>';
   }
+  if($successRedac){
+    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
+    echo '</ul></div>';
+  }
+
 
   echo '<table>';
   echo    '<tr>
@@ -263,6 +300,7 @@ function ll_aff_formulaire_redac($erreursRedac,$user){
 
 //fonction qui affiche le formulaire pour changer de photo
 function ll_aff_img($erreursImg){
+  global $successImg;
   echo
       '<section>',
           '<h2>Photo de profil</h2>',
@@ -277,6 +315,11 @@ function ll_aff_img($erreursImg){
       }
       echo '</ul></div>';
   }
+  if($successImg){
+    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
+    echo '</ul></div>';
+  }
+
 
   echo '<table>';
   echo '<label for="img">Choisir une photo de profil : </label>
@@ -415,10 +458,6 @@ function ll_traitement_info_perso($bd) {
 
 
     mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
-
-    // redirection sur la page protegee.php
-    header('location: ./compte.php');    // TODO : A MODIFIER DANS LE PROJET
-    exit(); //===> Fin du script
 }
 
 
@@ -442,11 +481,6 @@ function ll_traitement_mdp($bd){
 
   $sql = "UPDATE `utilisateur` SET `utPasse`='{$passe}' WHERE utPseudo='{$_SESSION['user']['pseudo']}'";
   mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
-
-  // redirection sur la page protegee.php
-  header('location: ./compte.php');    // TODO : A MODIFIER DANS LE PROJET
-  exit(); //===> Fin du script
-
 }
 
 
@@ -478,11 +512,6 @@ function ll_traitement_redac($bd){
 
   $sql = "UPDATE `redacteur` SET `reBio`='{$bio}',`reFonction`='{$fonction}',`reCategorie`='{$categorie}' WHERE rePseudo='{$_SESSION['user']['pseudo']}'";
   mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
-
-  // redirection sur la page protegee.php
-  header('location: ./compte.php');    // TODO : A MODIFIER DANS LE PROJET
-  exit(); //===> Fin du script
-
 }
 
 
@@ -490,8 +519,6 @@ function ll_traitement_redac($bd){
 //fonction qui fait le traitement du formulaire pour changer de photo
 function ll_traitement_img($bd){
   $erreursImg=array();
-
-  var_dump($_FILES);
 
   if (empty($_FILES)) {
       $erreursImg[] = 'La photo doit être au format .jpg.';
@@ -506,11 +533,6 @@ function ll_traitement_img($bd){
   if (count($erreursImg) > 0) {
       return $erreursImg;   //===> FIN DE LA FONCTION
   }
-
-  // redirection sur la page protegee.php
-  header('location: ./compte.php');    // TODO : A MODIFIER DANS LE PROJET
-  exit(); //===> Fin du script*/
-
 }
 
 
