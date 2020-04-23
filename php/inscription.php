@@ -135,14 +135,14 @@ function ll_traitement_inscription() {
 
     /*
     * Toutes les erreurs détectées qui nécessitent une modification du code HTML sont considérées comme des tentatives de piratage
-    * et donc entraînent l'appel de la fonction ll_session_exit() sauf les éventuelles suppressions des attributs required 
+    * et donc entraînent l'appel de la fonction ll_session_exit() sauf les éventuelles suppressions des attributs required
     * car l'attribut required est une nouveauté apparue dans la version HTML5 et nous souhaitons que l'application fonctionne également
     * correctement sur les vieux navigateurs qui ne supportent pas encore HTML5
     *
     */
-    if( !ll_parametres_controle('post', array('pseudo', 'nom', 'prenom', 'naissance_j', 'naissance_m', 'naissance_a', 
+    if( !ll_parametres_controle('post', array('pseudo', 'nom', 'prenom', 'naissance_j', 'naissance_m', 'naissance_a',
                                               'passe1', 'passe2', 'email', 'btnInscription'), array('cbCGU', 'cbSpam', 'radSexe'))) {
-        ll_session_exit();   
+        ll_session_exit();
     }
 
     $erreurs = array();
@@ -158,7 +158,7 @@ function ll_traitement_inscription() {
         $erreurs[] = 'Vous devez choisir une civilité.';
     }
     else if (! (ll_est_entier($_POST['radSexe']) && ll_est_entre($_POST['radSexe'], 1, 2))){
-        ll_session_exit(); 
+        ll_session_exit();
     }
 
     // vérification des noms et prénoms
@@ -169,15 +169,15 @@ function ll_traitement_inscription() {
 
     // vérification de la date
     if (! (ll_est_entier($_POST['naissance_j']) && ll_est_entre($_POST['naissance_j'], 1, 31))){
-        ll_session_exit(); 
+        ll_session_exit();
     }
 
     if (! (ll_est_entier($_POST['naissance_m']) && ll_est_entre($_POST['naissance_m'], 1, 12))){
-        ll_session_exit(); 
+        ll_session_exit();
     }
     $anneeCourante = (int) date('Y');
     if (! (ll_est_entier($_POST['naissance_a']) && ll_est_entre($_POST['naissance_a'], $anneeCourante  - NB_ANNEE_DATE_NAISSANCE + 1, $anneeCourante))){
-        ll_session_exit(); 
+        ll_session_exit();
     }
 
     $jour = (int)$_POST['naissance_j'];
@@ -221,12 +221,12 @@ function ll_traitement_inscription() {
         $erreurs[] = 'Vous devez accepter les conditions générales d\'utilisation.';
     }
     else if (! (ll_est_entier($_POST['cbCGU']) && $_POST['cbCGU'] == 1)){
-        ll_session_exit(); 
+        ll_session_exit();
     }
 
     // vérification si l'utilisateur accepte de recevoir les mails pourris
     if (isset($_POST['cbSpam']) && ! (ll_est_entier($_POST['cbSpam']) && $_POST['cbSpam'] == 1)){
-        ll_session_exit(); 
+        ll_session_exit();
     }
 
     // si erreurs --> retour
@@ -302,30 +302,6 @@ function ll_traitement_inscription() {
     exit(); //===> Fin du script
 }
 
-//___________________________________________________________________
-/**
- * Vérification des champs nom et prénom
- *
- * @param  string       $texte champ à vérifier
- * @param  string       $nom chaîne à ajouter dans celle qui décrit l'erreur
- * @param  array        $erreurs tableau dans lequel les erreurs sont ajoutées
- * @param  int          $long longueur maximale du champ correspondant dans la base de données
- */
-function ll_verifier_texte($texte, $nom, &$erreurs, $long = -1){
-    mb_regex_encoding ('UTF-8'); //définition de l'encodage des caractères pour les expressions rationnelles multi-octets
-    if (empty($texte)){
-        $erreurs[] = "$nom ne doit pas être vide.";
-    }
-    else if(strip_tags($texte) != $texte){
-        $erreurs[] = "$nom ne doit pas contenir de tags HTML";
-    }
-    elseif ($long > 0 && mb_strlen($texte, 'UTF-8') > $long){
-        // mb_* -> pour l'UTF-8, voir : https://www.php.net/manual/fr/function.mb-strlen.php
-        $erreurs[] = "$nom ne peut pas dépasser $long caractères";
-    }
-    elseif(!mb_ereg_match('^[[:alpha:]]([\' -]?[[:alpha:]]+)*$', $texte)){
-        $erreurs[] = "$nom contient des caractères non autorisés";
-    }
-}
+
 
 ?>

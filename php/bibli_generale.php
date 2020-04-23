@@ -131,12 +131,14 @@ function ll_bd_erreur($bd, $sql) {
 function ll_html_proteger_sortie($content) {
     if (is_array($content)) {
         foreach ($content as &$value) {
-            $value = ll_html_proteger_sortie($value);   
+            $value = ll_html_proteger_sortie($value);
         }
         unset ($value); // à ne pas oublier (de façon générale)
         return $content;
     }
     if (is_string($content)){
+        $content=htmlspecialchars($content,ENT_NOQUOTES);
+        $content=str_replace('&amp;#039;','\'',$content);
         return htmlentities($content, ENT_QUOTES, 'UTF-8');
     }
     return $content;
@@ -290,7 +292,7 @@ function ll_aff_liste_nombre($nom, $min, $max, $pas, $defaut) {
  * @param int       $a_s            L'année sélectionnée
  * @param int       $pas_annee      Le pas d'itération de l'année (si positif, énumération croissante, sinon décroissante)
  */
-function ll_aff_listes_date($name, $annee_min, $annee_max, $j_s = 0, $m_s = 0, $a_s = 0, $pas_annee = -1){ 
+function ll_aff_listes_date($name, $annee_min, $annee_max, $j_s = 0, $m_s = 0, $a_s = 0, $pas_annee = -1){
     list($jj, $mm, $aa) = explode('-', date('j-n-Y'));
     ll_aff_liste_nombre("{$name}_j", 1, 31, 1, $j_s ? $j_s : $jj);
     ll_aff_liste_mois("{$name}_m", $m_s ? $m_s : $mm);

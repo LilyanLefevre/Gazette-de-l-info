@@ -254,6 +254,8 @@ function bbcode_to_html($bbtext){
     "/\[a:mailto:(.*?)\](.*?)\[\/a\]/i" => "<a href=\"mailto:$1\">$2</a>",
     "/\[a:https:(.*?)\](.*?)\[\/a\]/i" => "<a href=\"https:$1\" title=\"$2\">$2</a>",
     "/\[#(.*?)\]/i" => "&#$1",
+    "/\[a:#(.*?)](.*?)\[\/a\]/i" => "<a href=\"#$1\">$2</a>",
+
 
   );
 
@@ -263,6 +265,31 @@ function bbcode_to_html($bbtext){
   return $bbtext;
 }
 
+//___________________________________________________________________
+/**
+ * Vérification des champs nom et prénom
+ *
+ * @param  string       $texte champ à vérifier
+ * @param  string       $nom chaîne à ajouter dans celle qui décrit l'erreur
+ * @param  array        $erreurs tableau dans lequel les erreurs sont ajoutées
+ * @param  int          $long longueur maximale du champ correspondant dans la base de données
+ */
+function ll_verifier_texte($texte, $nom, &$erreurs, $long = -1){
+    mb_regex_encoding ('UTF-8'); //définition de l'encodage des caractères pour les expressions rationnelles multi-octets
+    if (empty($texte)){
+        $erreurs[] = "$nom ne doit pas être vide.";
+    }
+    else if(strip_tags($texte) != $texte){
+        $erreurs[] = "$nom ne doit pas contenir de tags HTML";
+    }
+    elseif ($long > 0 && mb_strlen($texte, 'UTF-8') > $long){
+        // mb_* -> pour l'UTF-8, voir : https://www.php.net/manual/fr/function.mb-strlen.php
+        $erreurs[] = "$nom ne peut pas dépasser $long caractères";
+    }
+    elseif(!mb_ereg_match('^[[:alpha:]]([\' -]?[[:alpha:]]+)*$', $texte)){
+        $erreurs[] = "$nom contient des caractères non autorisés";
+    }
+}
 
 
 ?>

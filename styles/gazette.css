@@ -575,3 +575,18 @@ a[href]:hover.pages, a[href]:visited:hover.pages{
 .recherche{
   text-align: center;
 }
+
+td.bio{
+  vertical-align: top;
+}
+
+.success{
+    color: green;
+    font-size: 14px;
+    font-weight: bold;
+    width: 80%;
+    margin: 10px auto;
+    border: solid 2px red;
+    padding: 5px;
+    line-height: 1.5;
+}

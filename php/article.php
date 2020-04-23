@@ -88,9 +88,9 @@ function ll_aff_article() {
 
     $imgFile = "../upload/{$id}.jpg";
 
-    //remplace les [] par des <>
+    //remplace le bbcode par des balises
     $art=bbcode_to_html($tab["arTexte"]);
-    //$art=$tab["arTexte"];
+
     // génération du bloc <article>
     echo '<article>',
             '<h3>', $tab['arTitre'], '</h3>',
@@ -124,10 +124,9 @@ function ll_aff_article() {
     if (isset($tab['coID'])) {
         echo '<ul>';
         while ($tab = mysqli_fetch_assoc($res)) {
-            $com=ll_html_proteger_sortie($tab['coTexte']);
-            $com=bbcode_to_html($com);
+            $com=bbcode_to_html($tab['coTexte']);
             echo '<li>',
-                    '<p>Commentaire de <strong>', ll_html_proteger_sortie($tab['coAuteur']), '</strong>, le ',
+                    '<p>Commentaire de <strong>', $tab['coAuteur'], '</strong>, le ',
                         ll_date_to_string($tab['coDate']),
                     '</p>',
                     '<blockquote>', $com, '</blockquote>',
