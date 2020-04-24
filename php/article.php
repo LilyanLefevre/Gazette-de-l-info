@@ -19,7 +19,7 @@ if (!ll_parametres_controle('get', array(), array('id'))) {
     header('Location: ../index.php');
     exit;
 }
-if (!ll_parametres_controle('post', array(), array('btnAjout','commentaire'))) {
+if (!ll_parametres_controle('post', array(), array('btnAjout','commentaire','btnSupprimer','btnAnnuler'))) {
     header('Location: ../index.php');
     exit;
 }
@@ -147,12 +147,27 @@ function ll_aff_article($connecte,$erreursAjout,$bd) {
         echo '<ul>';
         while ($tab = mysqli_fetch_assoc($res)) {
             $com=bbcode_to_html($tab['coTexte']);
-            echo '<li>',
+            echo '<div class="commentaire" >
+                  <li>',
                     '<p>Commentaire de <strong>', $tab['coAuteur'], '</strong>, le ',
                         ll_date_to_string($tab['coDate']),
+                        '<div class="delete_com">';
+
+            //si l'utilisateur est connecté
+            if(isset($_SESSION['user'])){
+              //si l'utilisateur est l'auteur du commentaire ou s'il est rédacteur
+              if($tab['coAuteur']==$_SESSION['user']['pseudo'] || $_SESSION['user']['redacteur']==true){
+                  //on creer un bouton supprimer qui renvoie sur le script supression_commentaire.php
+                  //qui s'occupe de supprimer le commentaire
+                  echo   '<a href="supression_commentaire.php?id=',$tab['coID'],'" class="bouton_dialog">Supprimer le commentaire</a>';
+              }
+            }
+
+            echo        '</div>',
                     '</p>',
-                    '<blockquote class="commentaire">', $com, '</blockquote>',
-                '</li>';
+                    '<blockquote>', $com, '</blockquote>',
+                  '</li>
+                </div>';
         }
         echo '</ul>';
     }
@@ -290,8 +305,7 @@ function ll_aff_erreur($msg) {
 function ll_aff_modifier(){
   echo '<section>',
           '<h2>Modifier votre article </h2>',
-          '<p><a href="./edition.php?id=',$_GET['id'],'#edition">Modifier </a>',
-          '<a href="./edition.php?id=',$_GET['id'],'#supprimer"> Supprimer</a>',
+          '<p>Vous êtes l\'auteur de cet article, <a href="./edition.php?id=',$_GET['id'],'">cliquez ici pour le modifier ou le supprimer. </a></p>',
       '</section>';
 }
 

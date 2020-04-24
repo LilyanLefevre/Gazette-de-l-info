@@ -683,6 +683,27 @@ section > a.bouton_dialog:hover , section > a.bouton_dialog:visited:hover{
   width: fit-content;
 }
 
-blockquote.commentaire:hover{
-  color:red;
+.commentaire:hover {
+  background-color:#f0f0f0;
+}
+
+.delete_com > a.bouton_dialog, .delete_com > a.bouton_dialog:visited {
+  color:black;
+  text-decoration: none;
+  float: right;
+  margin-top: -30px;
+  width: auto;
+  text-align: center;
+  background-color: #f0f0f0;
+  font-size: 15px;
+  font-weight: bold;
+  border: solid 2px #444;
+  border-radius: 5px;
+  padding: 2px 5px;
+  min-width: 30px;
+  cursor: pointer;
+}
+a.bouton_dialog:visited:hover , a.bouton_dialog:hover {
+  background: red;
+  color: white;
 }

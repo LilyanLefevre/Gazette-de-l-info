@@ -13,6 +13,9 @@ if(isset($_SESSION['user'])){
   header("Location: ../index.php");
   exit();
 }
+if(!isset($_SESSION['source'])){
+  $_SESSION['source']=isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '../index.php';
+}
 
 // si formulaire soumis, traitement de la demande d'inscription
 if (isset($_POST['btnConnexion'])) {
@@ -80,8 +83,9 @@ function cbl_traitement_connexion(){
     // Libération de la mémoire associée au résultat de la requête
     mysqli_free_result($res);
 
-    header('location: ../index.php');
-    exit(0);
+    // redirection sur la page source ou sur index sinon
+    header('Location: ' . $_SESSION['source']);
+    exit(); //===> Fin du script
 }
 
 function cbl_aff_form($erreurs) {
