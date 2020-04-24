@@ -24,9 +24,6 @@ if (isset($_POST['btnConnexion'])) {
 else{
     $erreurs = FALSE;
 }
-
-
-
 // génération de la page
 ll_aff_entete('Connexion', 'Connexion');
 

@@ -703,6 +703,7 @@ section > a.bouton_dialog:hover , section > a.bouton_dialog:visited:hover{
   min-width: 30px;
   cursor: pointer;
 }
+
 a.bouton_dialog:visited:hover , a.bouton_dialog:hover {
   background: red;
   color: white;
