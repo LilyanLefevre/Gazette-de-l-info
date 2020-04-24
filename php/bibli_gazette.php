@@ -69,7 +69,7 @@ function ll_aff_menu($pseudo='', $droits = array(false, false), $prefix = '..') 
         echo '<a href="#">', $pseudo, '</a>',
                 '<ul>',
                     '<li><a href="', $prefix, '/php/compte.php">Mon profil</a></li>',
-                    $droits[0] ? "<li><a href=\"{$prefix}/php/edition.php\">Nouvel article</a></li>" : '',
+                    $droits[0] ? "<li><a href=\"{$prefix}/php/nouveau.php\">Nouvel article</a></li>" : '',
                     $droits[1] ? "<li><a href=\"{$prefix}/php/admin.php\">Administration</a></li>" : '',
                     '<li><a href="', $prefix, '/php/deconnexion.php">Se déconnecter</a></li>',
                 '</ul>';
@@ -164,6 +164,7 @@ function ll_verifie_authentification() {
     if (! isset($_SESSION['user'])) {
         ll_session_exit('./connexion.php');
     }
+    return true;
 }
 
 //_______________________________________________________________
@@ -232,7 +233,7 @@ function bbcode_to_html($bbtext){
 
     '[it]' => '<em>','[/it]' => '</em>',
     '[underline]' => '<span style="text-decoration:underline;">','[/underline]' => '</span>',
-    '[b]' => '<span style="font-weight:bold;">','[/b]' => '</span>',
+    '[gras]' => '<span style="font-weight:bold;">','[/gras]' => '</span>',
     '[u]' => '<span style="text-decoration:underline;">','[/u]' => '</span>',
     '[br]' => '<br>',
     '[citation]' => '<blockquote>', '[/citation]' => '</blockquote>',
@@ -251,6 +252,7 @@ function bbcode_to_html($bbtext){
 
   $bbextended = array(
     "/\[youtube:(.*?):(.*?):(.*?)\s(.*?)\]/i" => "<figure><iframe width=\"$1\" height=\"$2\" src=\"$3\" allowfullscreen></iframe> <figcaption>$4</figcaption></figure>" ,
+    "/\[youtube:(.*?):(.*?):(.*?)\s*\]/i" => "<iframe width=\"$1\" height=\"$2\" src=\"$3\" allowfullscreen></iframe>" ,
     "/\[a:mailto:(.*?)\](.*?)\[\/a\]/i" => "<a href=\"mailto:$1\">$2</a>",
     "/\[a:https:(.*?)\](.*?)\[\/a\]/i" => "<a href=\"https:$1\" title=\"$2\">$2</a>",
     "/\[#(.*?)\]/i" => "&#$1",
@@ -291,5 +293,28 @@ function ll_verifier_texte($texte, $nom, &$erreurs, $long = -1){
     }
 }
 
+//___________________________________________________________________
+/**
+ * Vérification des champs texte, resume et titre
+ *
+ * @param  string       $texte champ à vérifier
+ * @param  string       $nom chaîne à ajouter dans celle qui décrit l'erreur
+ * @param  array        $erreurs tableau dans lequel les erreurs sont ajoutées
+ * @param  int          $long longueur maximale du champ correspondant dans la base de données
+ */
+function ll_verifier_texte_article($texte, $nom, &$erreurs, $long = -1){
+    mb_regex_encoding ('UTF-8'); //définition de l'encodage des caractères pour les expressions rationnelles multi-octets
+    if (empty($texte)){
+        $erreurs[] = "$nom ne doit pas être vide.";
+    }
+    else if(strip_tags($texte) != $texte){
+        $erreurs[] = "$nom ne doit pas contenir de tags HTML";
+    }
+    elseif ($long > 0 && mb_strlen($texte, 'UTF-8') > $long){
+        // mb_* -> pour l'UTF-8, voir : https://www.php.net/manual/fr/function.mb-strlen.php
+        $erreurs[] = "$nom ne peut pas dépasser $long caractères";
+    }
+
+}
 
 ?>

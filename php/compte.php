@@ -73,8 +73,10 @@ $user=ll_info_user($bd);
 echo '<main>';
 ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd);
 ll_aff_formulaire_mdp($erreursMdp);
-ll_aff_formulaire_redac($erreursRedac,$user);
-ll_aff_img($erreursImg);
+if($_SESSION['user']['redacteur']==true){
+  ll_aff_formulaire_redac($erreursRedac,$user);
+  ll_aff_img($erreursImg);
+}
 echo '</main>';
 ll_aff_pied();
 

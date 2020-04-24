@@ -8,6 +8,11 @@ ob_start();
 
 // démarrage de la session
 session_start();
+//on verifie sur l'utilisateur est bien authentifié et qu'il est bien l'auteur
+if(isset($_SESSION['user'])){
+  header("Location: ../index.php");
+  exit();
+}
 
 // si formulaire soumis, traitement de la demande d'inscription
 if (isset($_POST['btnConnexion'])) {
@@ -29,14 +34,14 @@ ob_end_flush(); //FIN DU SCRIPT
 
 function cbl_traitement_connexion(){
 	if( !ll_parametres_controle('post',array('pseudo','passe','btnConnexion'),array())) {
-        ll_session_exit(); 
+        ll_session_exit();
     }
 
     $erreurs = array();
 
-     // ouverture de la connexion à la base 
+     // ouverture de la connexion à la base
     $bd = ll_bd_connecter();
-    
+
     // vérification de l'existence du pseudo
     $pseudoe=trim($_POST['pseudo']);
     $pseudoe = mysqli_real_escape_string($bd, $pseudoe);
@@ -91,13 +96,13 @@ function cbl_aff_form($erreurs) {
         '<main>',
         '<section>',
             '<h2>Formulaire de connexion</h2>',
-            '<p>Pour vous connecter, remplissez le formulaire ci-dessous.</p>',            
+            '<p>Pour vous connecter, remplissez le formulaire ci-dessous.</p>',
             '<form action="connexion.php" method="post">';
 
     if ($erreurs) {
         echo '<div class="erreur">';
         foreach ($erreurs as $err) {
-            echo $err;   
+            echo $err;
         }
         echo '</div>';
     }
@@ -110,7 +115,7 @@ function cbl_aff_form($erreurs) {
             '<tr>',
                 '<td colspan="2">',
                     '<input type="submit" name="btnConnexion" value="Se connecter">',
-                    '<input type="reset" value="Annuler">', 
+                    '<input type="reset" value="Annuler">',
                 '</td>',
             '</tr>',
         '</table>',

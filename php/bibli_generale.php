@@ -404,4 +404,13 @@ function ll_aff_input_checkbox($libelle, $name, $value = 1, $attributs=array()){
     echo '> ', $libelle, '</label>';
 }
 
+function ll_aff_input_textarea($name,$label,$rows,$cols,$value,$class='',$class2=''){
+  echo    '<tr>';
+            if(!empty($label)){
+              echo '<td class="',$class,'"><label for="',$name,'">',$label,'</label></td>';
+            }
+  echo      '<td><textarea id="',$class2,'" name="',$name,'" rows="',$rows,'" cols="',$cols,'"">',$value,'</textarea></td>';
+          '</tr>';
+}
+
 ?>

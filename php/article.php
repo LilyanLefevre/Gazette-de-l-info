@@ -8,6 +8,10 @@ ob_start();
 // démarrage de la session
 session_start();
 
+$connecte=0;
+if(isset($_SESSION['user'])){
+  $connecte=1;
+}
 
 // si il y a une autre clé que id dans $_GET, piratage ?
 // => l'utilisateur est redirigé vers index.php
@@ -15,12 +19,26 @@ if (!ll_parametres_controle('get', array(), array('id'))) {
     header('Location: ../index.php');
     exit;
 }
+if (!ll_parametres_controle('post', array(), array('btnAjout','commentaire'))) {
+    header('Location: ../index.php');
+    exit;
+}
+
+// ouverture de la connexion à la base de données
+$bd = ll_bd_connecter();
+
+// si premiere partie soumise, traitement
+if (isset($_POST['btnAjout'])) {
+  $erreursAjout=ll_traitement_ajout($bd);
+}else{
+  $erreursAjout=FALSE;
+}
 
 // affichage de l'entête
 ll_aff_entete('L\'actu', 'L\'actu');
 
 // affichage du contenu (article + commentaires)
-ll_aff_article();
+ll_aff_article($connecte,$erreursAjout,$bd);
 
 // pied de page
 ll_aff_pied();
@@ -32,7 +50,7 @@ ob_end_flush();
 /**
  * Affichage de l'article et de ses commentaires
  */
-function ll_aff_article() {
+function ll_aff_article($connecte,$erreursAjout,$bd) {
 
     // vérification du format du paramètre dans l'URL
     if (!isset($_GET['id'])) {
@@ -46,8 +64,6 @@ function ll_aff_article() {
     }
     $id = (int)$_GET['id'];
 
-    // ouverture de la connexion à la base de données
-    $bd = ll_bd_connecter();
 
     // Récupération de l'article, des informations sur son auteur (y compris ses éentuelles infos renseignées dans la table 'redacteur'),
     // de ses éventuelles commentaires
@@ -75,6 +91,12 @@ function ll_aff_article() {
 
     $tab = mysqli_fetch_assoc($res);
 
+    //on affiche la rubrique modification de l'article si on en est l'auteur
+    if(isset($_SESSION['user'])){
+      if($tab['arAuteur']==$_SESSION['user']['pseudo']){
+        ll_aff_modifier();
+      }
+    }
     // Mise en forme du prénom et du nom de l'auteur pour affichage dans le pied du texte de l'article
     // Par exemple, pour 'johnny' 'bigOUde', ça donne 'J. Bigoude'
     // A faire avant la protection avec htmlentities() à cause des éventuels accents
@@ -129,7 +151,7 @@ function ll_aff_article() {
                     '<p>Commentaire de <strong>', $tab['coAuteur'], '</strong>, le ',
                         ll_date_to_string($tab['coDate']),
                     '</p>',
-                    '<blockquote>', $com, '</blockquote>',
+                    '<blockquote class="commentaire">', $com, '</blockquote>',
                 '</li>';
         }
         echo '</ul>';
@@ -146,12 +168,38 @@ function ll_aff_article() {
     mysqli_close($bd);
 
 
+    if($connecte==0){
+      echo    '<p>',
+                  '<a href="connexion.php">Connectez-vous</a> ou <a href="inscription.php">inscrivez-vous</a> ',
+                  'pour pouvoir commenter cet article !',
+               '</p>';
+    }else{
+      echo     '<div class="rediger_commentaire">',
+                '<p>Ajouter un commentaire</p>';
+      if ($erreursAjout) {
+          echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de votre inscription :<ul>';
+          foreach ($erreursAjout as $err) {
+              echo '<li>', $err, '</li>';
+          }
+          echo '</ul></div>';
+      }
+      echo        '<form action="#" method="post" >',
+                     '<table>';
+        ll_aff_input_textarea('commentaire','',20,80,'','','');
 
-    echo    '<p>',
-                '<a href="connexion.php">Connectez-vous</a> ou <a href="inscription.php">inscrivez-vous</a> ',
-                'pour pouvoir commenter cet article !',
-             '</p>',
-        '</section></main>';
+        echo          '<tr>',
+                          '<td>',
+                              '<input type="submit" name="btnAjout" value="Publier ce commentaire">',
+                          '</td>',
+                      '</tr>',
+
+                    '</table>',
+                '</form>',
+              '</div>';
+
+
+    }
+    echo '</section></main>';
 
 }
 
@@ -193,6 +241,37 @@ function ll_mb_ucfirst_lcremainder($str) {
     return $fc.mb_substr($str, 1, mb_strlen($str), 'UTF-8');
 }
 
+function ll_traitement_ajout($bd){
+  $erreursAjout=array();
+  $commentaire = mysqli_real_escape_string($bd,trim($_POST['commentaire']));
+
+  ll_verifier_texte_article($commentaire,"Le commentaire",$erreursAjout);
+
+  // si erreurs --> retour
+  if (count($erreursAjout) > 0) {
+      return $erreursAjout;   //===> FIN DE LA FONCTION
+  }
+
+  //on calcules l'id du commentaire à Ajouter
+  $sql="SELECT coID FROM commentaire ORDER BY coID DESC LIMIT 1";
+  $res=mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+  $max=mysqli_fetch_assoc($res);
+  $max=$max['coID'];
+  $id=$max+1;
+
+  //on récupère la date actuelle
+  date_default_timezone_set('Europe/Paris');
+  $today = date("YmdHi");
+
+  $sql = "INSERT INTO `commentaire`(`coID`, `coAuteur`, `coTexte`, `coDate`, `coArticle`) VALUES ('{$id}','{$_SESSION['user']['pseudo']}','{$commentaire}','{$today}','{$_GET['id']}')";
+  mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+
+  // redirection sur la page protegee.php
+  header('location: ./article.php?id='.$_GET['id']);
+  exit(); //===> Fin du script
+
+}
+
 //_______________________________________________________________
 /**
  *  Affchage d'un message d'erreur dans une zone dédiée de la page.
@@ -206,6 +285,14 @@ function ll_aff_erreur($msg) {
                 '<blockquote>', $msg, '</blockquote>',
             '</section>',
         '</main>';
+}
+
+function ll_aff_modifier(){
+  echo '<section>',
+          '<h2>Modifier votre article </h2>',
+          '<p><a href="./edition.php?id=',$_GET['id'],'#edition">Modifier </a>',
+          '<a href="./edition.php?id=',$_GET['id'],'#supprimer"> Supprimer</a>',
+      '</section>';
 }
 
 ?>

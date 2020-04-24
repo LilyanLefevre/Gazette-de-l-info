@@ -28,7 +28,7 @@ function ll_aff_contenu() {
   //si la clé id n'est pas présente ou s'il y a d'autres clés on redirige sur /actus.php?id=1
   if(isset($_GET["id"]) && ll_parametres_controle('get',array(),array("id"))){
     if(!ll_est_entier($_GET["id"])){
-      //si la clé n'est pas un entier on affiche une erreur 
+      //si la clé n'est pas un entier on affiche une erreur
       ll_aff_erreur("L'id de la page doit être un entier.");
     }else{
       echo "<main>";
@@ -61,7 +61,7 @@ function ll_aff_article_actus($bd,$id){
 function ll_aff_section_actus($idpage,$bd){
   global $date;
   $tab=ll_id_article_per_date($bd);
-  $pmax=round(((count($tab)-1)/4),0,PHP_ROUND_HALF_UP);
+  $pmax=ceil((count($tab)-1)/4);
   if($pmax<$idpage){
     $idpage=$pmax;
   }
@@ -116,7 +116,7 @@ function ll_aff_page($bd){
   $tab=mysqli_fetch_assoc($res);
 
   //on en deduit le nombre de page
-  $pmax=round(($tab["nbArticle"]/4),0,PHP_ROUND_HALF_UP);
+  $pmax=ceil($tab["nbArticle"]/4);
 
   echo "<section> <h2>Pages</h2>";
   $i=1;

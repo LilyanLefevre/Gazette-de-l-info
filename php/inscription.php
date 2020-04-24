@@ -298,7 +298,7 @@ function ll_traitement_inscription() {
     mysqli_close($bd);
 
     // redirection sur la page protegee.php
-    header('location: ./protegee.php');    // TODO : A MODIFIER DANS LE PROJET
+    header('location: ../index.php');  
     exit(); //===> Fin du script
 }
 

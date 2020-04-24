@@ -591,3 +591,98 @@ td.bio{
     line-height: 1.5;
     text-align: center;
 }
+
+td.editer{
+  vertical-align: top;
+}
+
+.modalDialog {
+	position: fixed;
+	font-family: Arial, Helvetica, sans-serif;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(0,0,0,0.8);
+	z-index: 99999;
+	opacity:0;
+	-webkit-transition: opacity 400ms ease-in;
+	-moz-transition: opacity 400ms ease-in;
+	transition: opacity 400ms ease-in;
+	pointer-events: none;
+}
+
+.modalDialog:target {
+	opacity:1;
+	pointer-events: auto;
+}
+
+.modalDialog > div {
+	width: 500px;
+	position: relative;
+	margin: 10% auto;
+	padding: 5px 20px 13px 20px;
+	border-radius: 10px;
+  background: linear-gradient(to bottom right, #E0E0E0, #909090);
+}
+
+a.close, a.close:visited{
+	background: black;
+	color: white;
+	line-height: 25px;
+	position: absolute;
+	right: -12px;
+	text-align: center;
+	top: -10px;
+	width: 24px;
+	text-decoration: none;
+	font-weight: bold;
+	border-radius: 12px;
+	box-shadow: 1px 1px 3px #000;
+}
+
+a.close:hover {
+  color: red;
+  text-decoration: none;
+}
+
+.dialogtitle{
+  font-weight: bold;
+  text-align: center;
+}
+
+section > a.bouton_dialog, section > a.bouton_dialog:visited{
+  margin: 0px 10px;
+    width: auto;
+    text-align: center;
+    background-color: #f0f0f0;
+    font-size: 15px;
+    font-weight: bold;
+    border: solid 2px #444;
+    border-radius: 5px;
+    padding: 2px 5px;
+    min-width: 30px;
+    cursor: pointer;
+}
+
+section > a.bouton_dialog:hover , section > a.bouton_dialog:visited:hover{
+  background: red;
+  color: white;
+}
+
+.rediger_commentaire{
+  border:solid 1px black;
+}
+.rediger_commentaire > p{
+  margin-top: -10px;
+  margin-left: 5px;
+  background: white;
+  width: max-content;
+}
+.rediger_commentaire > form{
+  width: fit-content;
+}
+
+blockquote.commentaire:hover{
+  color:red;
+}
