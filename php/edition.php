@@ -15,6 +15,7 @@ $bd = ll_bd_connecter();
 ll_verifie_authentification();
 $article=ll_verifie_auteur($bd);
 
+//variable globale qui valent 1 si la soumission d'un des formulaires réussi
 $suppressionSuccess=0;
 $annulerSuccess=0;
 $editionSuccess=0;
@@ -53,27 +54,39 @@ ll_aff_pied();
 
 ob_end_flush();
 
-
-
-
-
+/**
+ * fonction qui affiche l'éventuel succès de l'édition
+ * et le formulaire d'édition de l'article
+ *
+ * @param Array $article
+ * @param Array $erreursEdition
+ */
 function ll_aff_edition($article,$erreursEdition){
-  global $editionSuccess;
-  echo '<section>',
-          '<h2 id="edition">Editer l\'article</h2>';
+  global $suppressionSuccess;
+  if($suppressionSuccess==0){
+    global $editionSuccess;
+    echo '<section>',
+            '<h2 id="edition">Editer l\'article</h2>';
 
-  if($editionSuccess==1){
-    echo '<div class="success">Article édité avec succès.<ul>';
-    echo '</ul></div>';
+    //si l'édition réussie on affiche le succès
+    if($editionSuccess==1){
+      echo '<div class="success">Article édité avec succès.<ul>';
+      echo '</ul></div>';
+    }
+    echo    '<p>Vous pouvez éditer votrer article ici :</p>';
+
+    //on affiche le formulaire de l'article
+    ll_aff_formulaire_article($article,$erreursEdition);
+
+    echo  '</section>';
   }
-  echo    '<p>Vous pouvez éditer votrer article ici :</p>';
-
-  ll_aff_formulaire_article($article,$erreursEdition);
-
-  echo  '</section>';
 
 }
 
+/**
+ * fonction qui affiche l'éventuel succès de la suppression ou le formulaire
+ * de suppression l'article
+ */
 function ll_aff_supprimer(){
   global $suppressionSuccess,$annulerSuccess;
   echo '<section>',
@@ -81,16 +94,25 @@ function ll_aff_supprimer(){
   if($suppressionSuccess==1){
     echo '<div class="success">Article supprimé.<ul>';
     echo '</ul></div>';
+  }else{
+    if($annulerSuccess==1){
+      echo '<div class="success">Annulation prise en compte.<ul>';
+      echo '</ul></div>';
+    }
+
+    echo     'Vous pouvez suprimer votrer article ici :';
+    ll_aff_dialog_delete();
   }
-  if($annulerSuccess==1){
-    echo '<div class="success">Annulation prise en compte.<ul>';
-    echo '</ul></div>';
-  }
-  echo     'Vous pouvez suprimer votrer article ici :';
-ll_aff_dialog_delete();
 echo    '</section>';
 }
 
+/**
+ * fonction qui verifie que l'utilisateur actuel est l'auteur de l'article
+ *
+ * @param Object $bd connecter à la bd
+ *
+ * @return Array un tableau avec toutes les infos sur l'article actuel
+ */
 function ll_verifie_auteur($bd){
   $sql="SELECT arAuteur, arTexte, arTitre,arResume FROM article WHERE arID={$_GET['id']}";
   $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
@@ -103,6 +125,16 @@ function ll_verifie_auteur($bd){
   return $res;
 }
 
+/**
+  * fonction qui affiche le formulaire de modification de l'Article et les erreurs
+  * eventuelles
+  *
+  * En absence de soumission, $erreursEdition est égal à FALSE
+  * Quand la modification échoue, $erreursEdition est un tableau de chaînes
+  *
+  *  @param mixed $erreursEdition
+  *  @param Array $article tableau avec les infos. sur l'article
+  */
 function ll_aff_formulaire_article($article,$erreursEdition){
   $titre = ll_html_proteger_sortie(trim($article['arTitre']));
   $resume = ll_html_proteger_sortie(trim($article['arResume']));
@@ -135,6 +167,14 @@ function ll_aff_formulaire_article($article,$erreursEdition){
 
 }
 
+/**
+  * fonction qui traite le formulaire de modification de l'Article et renvoie
+  * les erreurs eventuelles
+  *
+  *  @param Object $bd
+  *
+  *  @return Array $erreursEdition
+  */
 function ll_traitement_edition($bd){
   $erreursEdition=array();
 
@@ -157,13 +197,25 @@ function ll_traitement_edition($bd){
 
 }
 
+/**
+  * fonction qui traite le formulaire de suppression de l'Article
+  *
+  *  @param Object $bd
+  */
 function ll_traitement_suppression($bd){
+  //on supprime tous les commentaires de l'article
   $sql1="DELETE FROM `commentaire` WHERE coArticle='{$_GET['id']}'";
   mysqli_query($bd, $sql1) or ll_bd_erreur($bd, $sql1);
+
+  //ensuite on peut supprimer l'article
   $sql2 = "DELETE FROM `article` WHERE arID='{$_GET['id']}'";
   mysqli_query($bd, $sql2) or ll_bd_erreur($bd, $sql2);
 }
 
+/**
+ * fonction qui affiche une boite de dialogue qui demande de confirmer ou d'Annuler
+ * la supression d'un article
+ */
 function ll_aff_dialog_delete(){
   echo   '<a href="#openModal" class="bouton_dialog">Supprimer</a>
           <div id="openModal" class="modalDialog">
