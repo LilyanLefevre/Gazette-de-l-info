@@ -317,4 +317,19 @@ function ll_verifier_texte_article($texte, $nom, &$erreurs, $long = -1){
 
 }
 
+/**
+  * fonction qui créer une date sous la fore: "Mois Annee"
+  * pour l'affichage d'une section
+  *
+  * @return String une chaine sous la forme 'Mois Annee'
+  *
+  */
+function ll_determine_date($i){
+  global $date;
+  $year=(int)($i/100000000);
+  $month=(int)(($i%100000000)/1000000);
+  $t=ll_get_tableau_mois();
+  $month=$t[$month-1];
+  return ($month." ".$year);
+}
 ?>

@@ -109,6 +109,9 @@ function ll_aff_article($connecte,$erreursAjout,$bd) {
     $tab = ll_html_proteger_sortie($tab);
 
     $imgFile = "../upload/{$id}.jpg";
+    if(!file_exists($imgFile)){
+      $imgFile="../images/none.jpg";
+    }
 
     //remplace le bbcode par des balises
     $art=bbcode_to_html($tab["arTexte"]);

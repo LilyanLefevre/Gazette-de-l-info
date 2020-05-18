@@ -49,8 +49,13 @@ function ll_aff_article_actus($bd,$id){
   $tab=ll_bd_select_articles($bd,"SELECT arID, arTitre, arResume FROM article WHERE arID={$id}");
   $tab=ll_html_proteger_sortie($tab);
 
+  $imgFile = "../upload/{$id}.jpg";
+  if(!file_exists($imgFile)){
+    $imgFile="../images/none.jpg";
+  }
+
   echo  '<article class="resume">',
-            '<img src="../upload/',$id,'.jpg" alt="Photo d\'illustration | ',$tab[$id]['arTitre'],'">',
+            '<img src="',$imgFile,'" alt="Photo d\'illustration | ',$tab[$id]['arTitre'],'">',
             '<h3>',$tab[$id]['arTitre'],'</h3>',
             '<p>',$tab[$id]['arResume'],'</p>',
             '<footer><a href="../php/article.php?id=',$id,'">Lire l\'article</a></footer>',
@@ -142,13 +147,5 @@ function ll_aff_erreur($msg) {
         '</main>';
 }
 
-//retourne une date sous la forme: Mois Annee
-function ll_determine_date($i){
-  global $date;
-  $year=(int)($i/100000000);
-  $month=(int)(($i%100000000)/1000000);
-  $t=ll_get_tableau_mois();
-  $month=$t[$month-1];
-  return ($month." ".$year);
-}
+
 ?>
