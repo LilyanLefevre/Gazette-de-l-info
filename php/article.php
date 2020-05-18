@@ -49,6 +49,11 @@ ob_end_flush();
 
 /**
  * Affichage de l'article et de ses commentaires
+ *
+ * @param Integer $connecte vaut 1 si l'utilisateur est connecté à son compte
+ * @param Array $erreursAjout tableau des erreurs rencontrées en cas d'ajouts
+ * d'un commentaire
+ * @param Object $bd connecter à la bd
  */
 function ll_aff_article($connecte,$erreursAjout,$bd) {
 
@@ -185,7 +190,8 @@ function ll_aff_article($connecte,$erreursAjout,$bd) {
     // fermeture de la connexion à la base de données
     mysqli_close($bd);
 
-
+    //affichage ou non du bloc pour rédiger un commentaire en fonction de la connexion
+    //de l'utilisateur
     if($connecte==0){
       echo    '<p>',
                   '<a href="connexion.php">Connectez-vous</a> ou <a href="inscription.php">inscrivez-vous</a> ',
@@ -194,6 +200,7 @@ function ll_aff_article($connecte,$erreursAjout,$bd) {
     }else{
       echo     '<div class="rediger_commentaire">',
                 '<p>Ajouter un commentaire</p>';
+      //s'il y a eu des erreurs dans le tableau d'erreurs on les affiche
       if ($erreursAjout) {
           echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de votre inscription :<ul>';
           foreach ($erreursAjout as $err) {
@@ -259,10 +266,18 @@ function ll_mb_ucfirst_lcremainder($str) {
     return $fc.mb_substr($str, 1, mb_strlen($str), 'UTF-8');
 }
 
+/**
+  * fonction qui traite l'ajout d'un commentaire
+  *
+  * @param Object $bd connecter à la bd
+  *
+  * @return Array $erreursAjout le tableau des éventuelles erreurs
+  */
 function ll_traitement_ajout($bd){
   $erreursAjout=array();
   $commentaire = mysqli_real_escape_string($bd,trim($_POST['commentaire']));
 
+  //verification du texte du commentaire
   ll_verifier_texte_article($commentaire,"Le commentaire",$erreursAjout);
 
   // si erreurs --> retour
@@ -290,21 +305,9 @@ function ll_traitement_ajout($bd){
 
 }
 
-//_______________________________________________________________
 /**
- *  Affchage d'un message d'erreur dans une zone dédiée de la page.
- *  @param  String  $msg    le message d'erreur à afficher.
- */
-function ll_aff_erreur($msg) {
-    echo '<main>',
-            '<section>',
-                '<h2>Oups, il y a une erreur...</h2>',
-                '<p>La page que vous avez demandée a terminé son exécution avec le message d\'erreur suivant :</p>',
-                '<blockquote>', $msg, '</blockquote>',
-            '</section>',
-        '</main>';
-}
-
+  * fonction d'affichage du bloc "modifier l'article"
+  */
 function ll_aff_modifier(){
   echo '<section>',
           '<h2>Modifier votre article </h2>',

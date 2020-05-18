@@ -43,17 +43,25 @@ function ll_aff_contenu() {
     echo '</main>';
   }
 }
-
+/**
+  * fonction qui affiche un article avec sa vignette
+  *
+  * @param Object $bd connecter à la bd
+  * @param Integer $id l'id de l'article à afficher
+  */
 function ll_aff_article_actus($bd,$id){
   $tab=array();
+  //on récupère les infos sur l'article à partir de son id
   $tab=ll_bd_select_articles($bd,"SELECT arID, arTitre, arResume FROM article WHERE arID={$id}");
   $tab=ll_html_proteger_sortie($tab);
 
+  //on creer le chemin de l'image de la vignette à afficher
   $imgFile = "../upload/{$id}.jpg";
   if(!file_exists($imgFile)){
     $imgFile="../images/none.jpg";
   }
 
+  //on affiche l'article dans une balise 'article'
   echo  '<article class="resume">',
             '<img src="',$imgFile,'" alt="Photo d\'illustration | ',$tab[$id]['arTitre'],'">',
             '<h3>',$tab[$id]['arTitre'],'</h3>',
@@ -62,14 +70,26 @@ function ll_aff_article_actus($bd,$id){
         '</article>';
 }
 
-
+/**
+  * fonction qui affiche une section avec 3 articles
+  *
+  * @param Object $bd connecter à la bd
+  * @param Integer $idpage l'id de la page à afficher, sert à calculer les id
+  * des articles à afficher
+  */
 function ll_aff_section_actus($idpage,$bd){
   global $date;
   $tab=ll_id_article_per_date($bd);
+
+  //on calcule l'id maximum de la page atteignable par rapport au nombre d'article
+  //présent dans la bd
   $pmax=ceil((count($tab)-1)/4);
+
+  //si l'id passé est supérieur, on va afficher la page d'id maximum
   if($pmax<$idpage){
     $idpage=$pmax;
   }
+
   //on définit les indices qui définissent l'intervalle des articles à afficher en
   //fonction de la page où on se trouve
   $lastArticle=($idpage*4);
@@ -82,6 +102,7 @@ function ll_aff_section_actus($idpage,$bd){
     $lastArticle=count($tab)-2;
   }
 
+  //on affiche les articles en les regroupant par date
   for($i=$firstArticle;$i<=$lastArticle;$i++){
     if(ll_determine_date($tab[$i][1])!=$date){
       if($date!="null"){
@@ -97,7 +118,13 @@ function ll_aff_section_actus($idpage,$bd){
 }
 
 
-//retourne les articles dans un tab triés par ordre chronologique
+/**
+  *retourne les articles dans un tab triés par ordre chronologique
+  *
+  * @param Object $bd connecter à la bd
+  *
+  * @return Array $tab
+  */
 function ll_id_article_per_date($bd){
   //on récupère tous les articles classés dans l'ordre de leur publication
   $res=array();
@@ -105,15 +132,23 @@ function ll_id_article_per_date($bd){
           FROM article
           ORDER BY arDatePublication DESC";
   $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+
+  //on récupère tous les résultats de la requête
   $i=0;
   while($tab[$i]=mysqli_fetch_row($res)){
     $i=$i+1;
   }
+
   return $tab;
 }
 
 
-//affiche les boutons pour voir d'autres articles en bas de la page
+/**
+  * affiche les boutons pour voir d'autres articles en bas de la page
+  *
+  * @param Object $bd connecter à la bd
+  *
+  */
 function ll_aff_page($bd){
   //compte le nombre d'articles
   $sql = "SELECT COUNT(*) as nbArticle FROM article";
@@ -125,6 +160,8 @@ function ll_aff_page($bd){
 
   echo "<section> <h2>Pages</h2>";
   $i=1;
+
+  //on affiche les boutons
   while($i<=$pmax){
     echo "<a href=\"actus.php?id=",$i,"\" class=\"pages\">",$i,"  </a>";
     $i++;
@@ -132,20 +169,8 @@ function ll_aff_page($bd){
   echo "</section>";
 }
 
-//_______________________________________________________________
-/**
- *  Affchage d'un message d'erreur dans une zone dédiée de la page.
- *  @param  String  $msg    le message d'erreur à afficher.
- */
-function ll_aff_erreur($msg) {
-    echo '<main>',
-            '<section>',
-                '<h2>Oups, il y a une erreur...</h2>',
-                '<p>La page que vous avez demandée a terminé son exécution avec le message d\'erreur suivant :</p>',
-                '<blockquote>', $msg, '</blockquote>',
-            '</section>',
-        '</main>';
-}
+
+
 
 
 ?>

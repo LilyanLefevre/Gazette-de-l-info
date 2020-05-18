@@ -332,4 +332,19 @@ function ll_determine_date($i){
   $month=$t[$month-1];
   return ($month." ".$year);
 }
+
+//_______________________________________________________________
+/**
+ *  Affchage d'un message d'erreur dans une zone dédiée de la page.
+ *  @param  String  $msg    le message d'erreur à afficher.
+ */
+function ll_aff_erreur($msg) {
+    echo '<main>',
+            '<section>',
+                '<h2>Oups, il y a une erreur...</h2>',
+                '<p>La page que vous avez demandée a terminé son exécution avec le message d\'erreur suivant :</p>',
+                '<blockquote>', $msg, '</blockquote>',
+            '</section>',
+        '</main>';
+}
 ?>
