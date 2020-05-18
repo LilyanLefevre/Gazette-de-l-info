@@ -17,12 +17,13 @@ ll_p_controle();
 
 $bd = ll_bd_connecter();
 
+//variables globales qui valent 1 en cas de succes
 $successInfoPerso=0;
 $successMdp=0;
 $successRedac=0;
 $successImg=0;
 
-// si premiere partie soumise, traitement
+// si premier formulaire soumis, traitement
 if (isset($_POST['btnInfoPerso'])) {
     $erreursInfoPerso = ll_traitement_info_perso($bd);
     if(empty($erreursInfoPerso)==true){
@@ -33,7 +34,7 @@ else{
     $erreursInfoPerso = FALSE;
 }
 
-// si premiere partie soumise, traitement
+// si deuxieme formulaire soumis, traitement
 if (isset($_POST['btnMdp'])) {
     $erreursMdp = ll_traitement_mdp($bd);
     if(empty($erreursMdp)){
@@ -45,7 +46,7 @@ else{
 }
 
 
-// si premiere partie soumise, traitement
+// si troisieme formulaire soumis, traitement
 if (isset($_POST['btnRedac'])) {
     $erreursRedac = ll_traitement_redac($bd);
     if(empty($erreursRedac)){
@@ -56,7 +57,7 @@ else{
     $erreursRedac = FALSE;
 }
 
-// si premiere partie soumise, traitement
+// si quatrieme formulaire soumis, traitement
 if (isset($_POST['btnImg'])) {
     $erreursImg = ll_traitement_img($bd);
     if(empty($erreursImg)){
@@ -83,7 +84,13 @@ ll_aff_pied();
 ob_end_flush();
 
 
-//retourne les infos de l'user actuel
+/**
+  * retourne les infos de l'utilisateur actuel
+  *
+  * @param Object $bd connecter à la bd
+  *
+  * @return Array $res, tableau associatif avec les infos de l'utilisateur
+  */
 function ll_info_user($bd){
   $sql="SELECT * FROM utilisateur,redacteur where utPseudo='{$_SESSION["user"]["pseudo"]}' AND utPseudo=rePseudo";
   $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
@@ -91,8 +98,11 @@ function ll_info_user($bd){
   return $res;
 }
 
-//fonction qui controle qu'il n'y a pas d'autres clé que celles possibles dans
-//$_POST
+/**
+  * fonction qui controle qu'il n'y a pas d'autres clé que celles possibles dans
+  * $_POST
+  *
+  */
 function ll_p_controle(){
   if( !ll_parametres_controle('post', array() , array('nom','prenom','email','naissance_j','naissance_m','naissance_a','radSexe','cbSpam','bio','categorie','fonction','passe1','passe2','btnMdp','btnImg','btnRedac','btnInfoPerso'))) {
       ll_session_exit();
@@ -100,16 +110,18 @@ function ll_p_controle(){
 }
 
 /**
- * Contenu de la page : affichage du formulaire de compte
+ * Contenu de la page : affichage du formulaire de modification du compte
  *
  * En absence de soumission, $erreursInfoPerso est égal à FALSE
- * Quand l'inscription échoue, $erreursInfoPerso est un tableau de chaînes
+ * Quand la modification échoue, $erreursInfoPerso est un tableau de chaînes
  *
  *  @param mixed    $erreursInfoPerso
  *  @global array   $_POST
+ *  @param Object   $bd, connecter à la bd
  */
 function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
     global $successInfoPerso;
+
 
     $anneeCourante = (int) date('Y');
 
@@ -141,27 +153,15 @@ function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
       $civilite=2;
     }
 
-    /* Des attributs required ont été ajoutés sur tous les champs que l'utilisateur doit obligatoirement remplir */
     echo
         '<section>',
             '<h2>Informations personnelles</h2>',
             '<p>Vous pouvez modifier les informations suivantes.</p>',
             '<form action="compte.php" method="post">';
 
+    ll_aff_erreur_success($erreursInfoPerso,$successInfoPerso);
 
-    if ($erreursInfoPerso) {
-        echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de vos modifications :<ul>';
-        foreach ($erreursInfoPerso as $err) {
-            echo '<li>', $err, '</li>';
-        }
-        echo '</ul></div>';
-    }
-    if($successInfoPerso==1){
-      echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
-      echo '</ul></div>';
-    }
-
-
+    //affichage des champs
     echo '<table>';
     ll_aff_ligne_input_radio('Votre civilité :', 'radSexe', array(1 => 'Monsieur', 2 => 'Madame'), $civilite, array('required' => 0));
     ll_aff_ligne_input('text', 'Votre nom :', 'nom', $nom, array('required' => 0));
@@ -171,11 +171,9 @@ function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
 
     ll_aff_ligne_input('email', 'Votre email :', 'email', $email, array('required' => 0));
     echo    '<tr>', '<td colspan="2">';
-    // l'attribut required est un attribut booléen qui n'a pas de valeur
 
     $attributs_checkbox = array();
     if ($mails_pourris){
-        // l'attribut checked est un attribut booléen qui n'a pas de valeur
         $attributs_checkbox['checked'] = 0;
     }
     ll_aff_input_checkbox('J\'accepte de recevoir des tonnes de mails pourris', 'cbSpam', 1, $attributs_checkbox);
@@ -192,31 +190,25 @@ function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
         '</section>';
 }
 
-//fonction qui affiche le formulaire pour changer de mot de passe
+/**
+ * Contenu de la page : affichage du formulaire de modification du mdp
+ *
+ * En absence de soumission, $erreursMdp est égal à FALSE
+ * Quand la modification échoue, $erreursMdp est un tableau de chaînes
+ *
+ *  @param mixed    $erreursMdp
+ */
 function ll_aff_formulaire_mdp($erreursMdp){
   global $successMdp;
-  /* Des attributs required ont été ajoutés sur tous les champs que l'utilisateur doit obligatoirement remplir */
   echo
       '<section>',
           '<h2>Authentification</h2>',
           '<p>Vous pouvez modifier votre mot de passe ci-dessous.</p>',
           '<form action="compte.php" method="post">';
 
+  ll_aff_erreur_success($erreursMdp,$successMdp);
 
-  if ($erreursMdp) {
-      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de votre changement de mot de passe :<ul>';
-      foreach ($erreursMdp as $err) {
-          echo '<li>', $err, '</li>';
-      }
-      echo '</ul></div>';
-
-  }
-  if($successMdp==1){
-    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
-    echo '</ul></div>';
-  }
-
-
+  //affichage des champs
   echo '<table>';
   ll_aff_ligne_input('password', 'Choisissez un mot de passe :', 'passe1', '', array('required' => 0));
   ll_aff_ligne_input('password', 'Répétez le mot de passe :', 'passe2', '', array('required' => 0));
@@ -236,9 +228,20 @@ function ll_aff_formulaire_mdp($erreursMdp){
 }
 
 
-//fonction qui affiche le formulaire pour changer ses infos de redacteur
-function ll_aff_formulaire_redac($bd,$erreursRedac,$user){
+/**
+ * Contenu de la page : affichage du formulaire de modification des Informations
+ * de rédacteur
+ *
+ * En absence de soumission, $erreursRedac est égal à FALSE
+ * Quand la modification échoue, $erreursRedac est un tableau de chaînes
+ *
+ *  @param mixed    $erreursRedac
+ *  @global array   $_POST
+ *  @param Object   $bd, connecter à la bd
+ */
+ function ll_aff_formulaire_redac($bd,$erreursRedac,$user){
   global $successRedac;
+
   // affectation des valeurs à afficher dans les zones du formulaire
   if (isset($_POST['btnRedac'])){
       $bio = ll_html_proteger_sortie(trim($_POST['bio']));
@@ -256,20 +259,9 @@ function ll_aff_formulaire_redac($bd,$erreursRedac,$user){
           '<p>Vous pouvez modifier votre profil de rédacteur ici.</p>',
           '<form action="compte.php" method="post">';
 
+  ll_aff_erreur_success($erreursRedac,$successRedac);
 
-  if ($erreursRedac) {
-      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de vos modifications :<ul>';
-      foreach ($erreursRedac as $err) {
-          echo '<li>', $err, '</li>';
-      }
-      echo '</ul></div>';
-  }
-  if($successRedac){
-    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
-    echo '</ul></div>';
-  }
-
-
+  //affichage du formulaire
   echo '<table>';
   echo    '<tr>
             <td class="bio"><label for="bio">Modifier votre biographie:</label></td>
@@ -300,8 +292,16 @@ function ll_aff_formulaire_redac($bd,$erreursRedac,$user){
 }
 
 
-//fonction qui affiche le formulaire pour changer de photo
-function ll_aff_img($erreursImg){
+/**
+ * Contenu de la page : affichage du formulaire de modification de la photo de
+ * profil
+ *
+ * En absence de soumission, $erreursImg est égal à FALSE
+ * Quand la modification échoue, $erreursImg est un tableau de chaînes
+ *
+ *  @param mixed    $erreursImg
+ */
+ function ll_aff_img($erreursImg){
   global $successImg;
   echo
       '<section>',
@@ -310,17 +310,7 @@ function ll_aff_img($erreursImg){
           '<form action="compte.php" method="post" enctype="multipart/form-data">';
 
 
-  if ($erreursImg) {
-      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de votre changement de mot de passe :<ul>';
-      foreach ($erreursImg as $err) {
-          echo '<li>', $err, '</li>';
-      }
-      echo '</ul></div>';
-  }
-  if($successImg){
-    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
-    echo '</ul></div>';
-  }
+  ll_aff_erreur_success($erreursImg,$successImg);
 
 
   echo '<table>';
@@ -341,15 +331,12 @@ function ll_aff_img($erreursImg){
 }
 
 /**
- *  Traitement d'une demande d'inscription.
+ * Traitement d'une demande de modification des infos. personnelles
+ * Si la modification échoue, $erreursInfoPerso est un tableau de chaînes
  *
- *  Si l'inscription réussit, un nouvel enregistrement est ajouté dans la table utilisateur,
- *  la variable de session $_SESSION['user'] est créée et l'utilisateur est redirigé vers la
- *  page index.php
+ *  @param Object $bd connecter à la bd
  *
- *  @global array    $_POST
- *  @global array    $_SESSION
- *  @return array    un tableau contenant les erreurs s'il y en a
+ *  @return array un tableau contenant les erreurs s'il y en a
  */
 function ll_traitement_info_perso($bd) {
 
@@ -400,10 +387,6 @@ function ll_traitement_info_perso($bd) {
     else if (mb_strlen($email, 'UTF-8') > LMAX_EMAIL){
         $erreursInfoPerso[] = 'L\'adresse mail ne peut pas dépasser '.LMAX_EMAIL.' caractères.';
     }
-    // la validation faite par le navigateur en utilisant le type email pour l'élément HTML input
-    // est moins forte que celle faite ci-dessous avec la fonction filter_var()
-    // Exemple : 'l@i' passe la validation faite par le navigateur et ne passe pas
-    // celle faite ci-dessous
     else if(! filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $erreursInfoPerso[] = 'L\'adresse mail n\'est pas valide.';
     }
@@ -418,9 +401,6 @@ function ll_traitement_info_perso($bd) {
         return $erreursInfoPerso;   //===> FIN DE LA FONCTION
     }
 
-    // on vérifie si le pseudo et l'adresse mail ne sont pas encore utilisés que si toutes les autres vérifications
-    // réussissent car ces 2 dernières vérifications coûtent un bras !
-
     //verif existence mail
     $emaile = mysqli_real_escape_string($bd, $email);
     $sql = "SELECT utPseudo,utEmail FROM utilisateur WHERE utEmail = '{$emaile}'";
@@ -431,6 +411,7 @@ function ll_traitement_info_perso($bd) {
             $erreursInfoPerso[] = 'Cette adresse email est déjà inscrite.';
         }
     }
+
     // Libération de la mémoire associée au résultat de la requête
     mysqli_free_result($res);
 
@@ -441,12 +422,17 @@ function ll_traitement_info_perso($bd) {
         return $erreursInfoPerso;   //===> FIN DE LA FONCTION
     }
 
+    //on met un 0 devant le mois s'il est <10
     if ($mois < 10) {
         $mois = '0' . $mois;
     }
+
+    //on met un 0 devant le jour s'il est <10
     if ($jour < 10) {
         $jour = '0' . $jour;
     }
+
+    //on convertit la civilité en lettre
     $civilite = (int) $_POST['radSexe'];
     $civilite = $civilite == 1 ? 'h' : 'f';
 
@@ -455,16 +441,22 @@ function ll_traitement_info_perso($bd) {
     $nom = mysqli_real_escape_string($bd, $nom);
     $prenom = mysqli_real_escape_string($bd, $prenom);
 
+    //on construit la requête et on l'exécute
     $sql = "UPDATE `utilisateur` SET `utNom`='{$nom}',`utPrenom`='{$prenom}',`utEmail`='{$emaile}'
             ,`utDateNaissance`={$annee}{$mois}{$jour},`utCivilite`='$civilite',`utMailsPourris`=$mailsPourris WHERE utPseudo='{$_SESSION['user']["pseudo"]}'";
-
-
     mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
 }
 
 
-//fonction qui fait le traitement du formulaire pour changer de mot de passe
-function ll_traitement_mdp($bd){
+/**
+ * Traitement d'une demande de modification de mot de passe
+ * Si la modification échoue, $erreursMdp est un tableau de chaînes
+ *
+ *  @param Object $bd connecter à la bd
+ *
+ *  @return array un tableau contenant les erreurs s'il y en a
+ */
+ function ll_traitement_mdp($bd){
   $erreursMdp=array();
   // vérification des mots de passe
   $passe1 = trim($_POST['passe1']);
@@ -486,8 +478,14 @@ function ll_traitement_mdp($bd){
 }
 
 
-//fonction qui fait le traitement du formulaire pour modifier son profil
-//de redacteur
+/**
+ * Traitement d'une demande de modification du profil rédacteur
+ * Si la modification échoue, $erreurrRedac est un tableau de chaînes
+ *
+ *  @param Object $bd connecter à la bd
+ *
+ *  @return array un tableau contenant les erreurs s'il y en a
+ */
 function ll_traitement_redac($bd){
   $erreursRedac=array();
   // vérification des champs saisis
@@ -495,14 +493,17 @@ function ll_traitement_redac($bd){
   $fonction =mysqli_real_escape_string($bd,trim($_POST['fonction']));
   $categorie=(int)$_POST['categorie'];
 
+  //on verifie que la bio n'est pas vide
   if(empty($bio)){
     $erreursRedac[]="La biographie ne peut pas être vide.";
   }
 
+  //on vérifie que la catégorie existe
   if(!ll_verif_categorie($bd,$categorie)){
     $erreursRedac[]="La catégorie n'est pas valide.";
   }
 
+  //si la fonction est vide alors on lui attribut la valeur NULL pour la requete sql
   if(empty($fonction)){
     $fonction=NULL;
   }
@@ -518,19 +519,30 @@ function ll_traitement_redac($bd){
 
 
 
-//fonction qui fait le traitement du formulaire pour changer de photo
+/**
+ * Traitement d'une demande de modification d'image
+ * Si la modification échoue, $erreursImg est un tableau de chaînes
+ *
+ *  @param Object $bd connecter à la bd
+ *
+ *  @return array un tableau contenant les erreurs s'il y en a
+ */
 function ll_traitement_img($bd){
   $erreursImg=array();
 
+  //on vérifie la présence d'un fichier
   if (empty($_FILES)) {
       $erreursImg[] = 'La photo doit être au format .jpg.';
   }
   $tmp_name=$_FILES["img"]["tmp_name"];
+  //on déplace le fichier dans ../upload/
   $b=move_uploaded_file($tmp_name, "../upload/".$_SESSION['user']['pseudo'].'.jpg');
 
+  //on vérifie que le fichier ait bien été téléchargé sur le serveur
   if($b==false){
     $erreursImg[]='Echec du téléchargement de l\image.';
   }
+
   // si erreurs --> retour
   if (count($erreursImg) > 0) {
       return $erreursImg;   //===> FIN DE LA FONCTION
@@ -538,18 +550,36 @@ function ll_traitement_img($bd){
 }
 
 
-//fonction qui retourne le numéro du jour d'une date sous la form aaaammjj
-function ll_retourner_jour($date){
+/**
+ * fonction qui retourne le numéro du jour d'une date sous la forme aaaammjj
+ *
+ * @param Integer $date la date à convertir
+ *
+ * @return Integer le nuémro du mois
+ */
+ function ll_retourner_jour($date){
   return $date%100;
 }
 
-//fonction qui retourne le numéro du mois d'une date sous la form aaaammjj
+/**
+ * fonction qui retourne le numéro du mois d'une date sous la forme aaaammjj
+ *
+ * @param Integer $date la date à convertir
+ *
+ * @return Integer le nuémro du jour
+ */
 function ll_retourner_mois($date){
   $inter=(integer)($date/100);
   return $inter%100;
 }
 
-//fonction qui retourne le numéro de l'annee d'une date sous la form aaaammjj
+/**
+ * fonction qui retourne le numéro de l'année d'une date sous la forme aaaammjj
+ *
+ * @param Integer $date la date à convertir
+ *
+ * @return Integer le nuémro de l'année
+ */
 function ll_retourner_annee($date){
   return (integer)($date/10000);
 }
@@ -572,6 +602,14 @@ function ll_aff_liste_categorie($bd,$nom, $defaut) {
     ll_aff_liste($nom, $tab, $defaut);
 }
 
+/**
+  * fonction qui vérifie que la catégorie donnée existe bien dans la table categorie
+  *
+  * @param Object $bd connecter à la bd
+  * @param Integer $id le numéro de la catégorie
+  *
+  * @return Boolean
+  */
 function ll_verif_categorie($bd,$id){
     $sql = "SELECT * FROM categorie WHERE catID='{$id}'";
     $res=mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
@@ -580,5 +618,30 @@ function ll_verif_categorie($bd,$id){
       return true;
     }
     return false;
+}
+
+/**
+  * fonction qui affiche les erreurs ou le succès du traitement qui a eu lieu
+  *
+  * @param Array $erreurs, tableau avec des chaines qui contiennent les
+  * erreurs commises
+  * @param Integer $success, entier qui vaut 1 en cas de succès de la soumission
+  * du formulaire et 0 sinon
+  */
+function ll_aff_erreur_success($erreurs,$success){
+  //affichage des éventuelles erreurs commises lors de la soumission du formulaire
+  if ($erreurs) {
+      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de vos modifications :<ul>';
+      foreach ($erreurs as $err) {
+          echo '<li>', $err, '</li>';
+      }
+      echo '</ul></div>';
+  }
+
+  //affichage de l'éventuel succès de l'opération efféctuée
+  if($success==1){
+    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
+    echo '</ul></div>';
+  }
 }
 ?>

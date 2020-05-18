@@ -37,9 +37,19 @@ function ll_aff_contenu() {
 
 }
 
+/**
+  * fonction qui affiche les sections de rédacteurs avec la présentation des
+  * des redacteurs
+  *
+  * @param Array $redac tableau avec toutes les infos. sur tous les rédacteurs
+  */
 function ll_aff_section($redac){
   global $section;
+
+  //parcours du tableau de rédacteurs
   foreach ($redac as $key => $value) {
+
+    //Si l'utilisateur actuel a le droit de rédacteur on l'affiche
     if($value['utStatut']==1 ||$value['utStatut']==3 ){
       if($section!=ucfirst($value["catLibelle"])){
         if($section!="null"){
@@ -48,6 +58,7 @@ function ll_aff_section($redac){
         $section=ucfirst($value["catLibelle"]);
         echo "<section><h2>",$section,"</h2>";
       }
+      //si sa bio n'est pas vide on affiche l'utilisateur
       if(!empty($value["reBio"])){
         ll_aff_redacteur($value);
       }
@@ -55,30 +66,27 @@ function ll_aff_section($redac){
   }
 }
 
-//affiche un redacteur en chef
-function ll_aff_redacteur_chef($redac){
-  $bio=bbcode_to_html($redac['reBio']);
-  $img='../upload/'.$redac['rePseudo'].'.jpg';
-  if(!file_exists($img)){
-    $img="../images/anonyme.jpg";
-  }
-  echo      '<article class="redacteur" id="',$redac['rePseudo'],'">',
-                '<img src=',$img,' width="150" height="200" alt="',$redac['utPrenom'],' ',$redac['utNom'],'">',
-                '<h3>',$redac['utPrenom'],' ',$redac['utNom'],'</h3>',
-                $bio,
-            '</article>';
-}
-
-//affiche un redacteur
+/**
+  * fonction qui affiche un redacteur
+  *
+  * @param Array $redac tableau
+  */
 function ll_aff_redacteur($redac){
+  //convertion du bbcode
   $bio=bbcode_to_html($redac['reBio']);
+
+  //construction du chemin de l'image
   $img='../upload/'.$redac['rePseudo'].'.jpg';
   if(!file_exists($img)){
     $img="../images/anonyme.jpg";
   }
+
+  //affichage du rédacteur
   echo      '<article class="redacteur" id="',$redac['rePseudo'],'">',
                 '<img src=',$img,' width="150" height="200" alt="',$redac['utPrenom'],' ',$redac['utNom'],'">',
                 '<h3>',ucfirst($redac['utPrenom']),' ',ucfirst($redac['utNom']),'</h3>';
+
+  //si la fonction n'est pas vide on l'affiche
   if(!is_null($redac['reFonction'])){
     echo        '<h4>',$redac['reFonction'],'</h4>';
   }
@@ -88,7 +96,11 @@ function ll_aff_redacteur($redac){
 
 
 
-//retourne un tableau associatif avec tous les redacteurs et leur attributs (nom,prenom,bio...)
+/**
+  * fonction qui récupère tous les redacteurs et leur attributs (nom,prenom,bio...)
+  *
+  * @param Object $bd connecter à la bd
+  */
 function ll_get_redacteur($bd){
   $sql="SELECT rePseudo, utPrenom, utNom,utStatut, reBio, reCategorie, reFonction, catLibelle FROM redacteur, utilisateur, categorie WHERE rePseudo=utPseudo AND reCategorie=catID ORDER BY reCategorie ASC";
   $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
