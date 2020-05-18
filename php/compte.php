@@ -74,7 +74,7 @@ echo '<main>';
 ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd);
 ll_aff_formulaire_mdp($erreursMdp);
 if($_SESSION['user']['redacteur']==true){
-  ll_aff_formulaire_redac($erreursRedac,$user);
+  ll_aff_formulaire_redac($bd,$erreursRedac,$user);
   ll_aff_img($erreursImg);
 }
 echo '</main>';
@@ -237,7 +237,7 @@ function ll_aff_formulaire_mdp($erreursMdp){
 
 
 //fonction qui affiche le formulaire pour changer ses infos de redacteur
-function ll_aff_formulaire_redac($erreursRedac,$user){
+function ll_aff_formulaire_redac($bd,$erreursRedac,$user){
   global $successRedac;
   // affectation des valeurs à afficher dans les zones du formulaire
   if (isset($_POST['btnRedac'])){
@@ -281,7 +281,7 @@ function ll_aff_formulaire_redac($erreursRedac,$user){
             <td><textarea id="fonction" name="fonction" rows="5" cols="33"">',$fonction,'</textarea></td>';
           '</tr>';
   echo '<tr>', '<td>Votre catégorie :</td>', '<td>';
-  ll_aff_liste_nombre('categorie',1,3,1,$categorie);
+  ll_aff_liste_categorie($bd,'categorie',$categorie);
   echo '</td>', '</tr>';
 
 
@@ -499,7 +499,7 @@ function ll_traitement_redac($bd){
     $erreursRedac[]="La biographie ne peut pas être vide.";
   }
 
-  if($categorie!=1 && $categorie!=2 && $categorie!=3){
+  if(!ll_verif_categorie($bd,$categorie)){
     $erreursRedac[]="La catégorie n'est pas valide.";
   }
 
@@ -552,5 +552,33 @@ function ll_retourner_mois($date){
 //fonction qui retourne le numéro de l'annee d'une date sous la form aaaammjj
 function ll_retourner_annee($date){
   return (integer)($date/10000);
+}
+
+//___________________________________________________________________
+/**
+ * Affiche une liste déroulante représentant les categories de redacteur
+ *
+ * @param string    $nom       Le nom de la liste déroulante (valeur de l'attribut name)
+ * @param int       $default   La catégorie qui doit être sélectionnée par défaut
+ */
+function ll_aff_liste_categorie($bd,$nom, $defaut) {
+    $cat = ll_get_categorie($bd);
+    //on met ce tableau sous la forme: catID => catLibelle
+    $tab=array();
+    foreach ($cat as $key => $value) {
+      $tab[$value['catID']]=$value['catLibelle'];
+    }
+
+    ll_aff_liste($nom, $tab, $defaut);
+}
+
+function ll_verif_categorie($bd,$id){
+    $sql = "SELECT * FROM categorie WHERE catID='{$id}'";
+    $res=mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+
+    if(mysqli_num_rows($res)!=0){
+      return true;
+    }
+    return false;
 }
 ?>

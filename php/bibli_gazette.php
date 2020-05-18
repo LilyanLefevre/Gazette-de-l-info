@@ -347,4 +347,25 @@ function ll_aff_erreur($msg) {
             '</section>',
         '</main>';
 }
+
+/**
+  * fonction qui récupère les catégories et leur libellé
+  *
+  * @param Object $bd connecter à la bd
+  *
+  * @return Array $tab tableau avec les catégorie et leur libellé
+  */
+function ll_get_categorie($bd){
+  $sql = "SELECT catID, catLibelle FROM categorie";
+  $res=mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+  $l=mysqli_num_rows($res);
+  $i=0;
+  $tab=array();
+  while($i<$l){
+    $tab[$i]=mysqli_fetch_assoc($res);
+    $i=$i+1;
+  }
+
+  return $tab;
+}
 ?>

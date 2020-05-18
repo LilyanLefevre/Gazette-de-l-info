@@ -298,9 +298,10 @@ function ll_traitement_inscription() {
     mysqli_close($bd);
 
     // redirection sur la page protegee.php
-    header('location: ../index.php');  
+    header('location: ../index.php');
     exit(); //===> Fin du script
 }
+
 
 
 

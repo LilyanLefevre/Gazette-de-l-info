@@ -8,11 +8,8 @@ ob_start();
 
 // démarrage de la session
 session_start();
-
+$section="null";
 ll_aff_entete('L\'Actu', 'L\'Actu');
-$chef=0;
-$violons=0;
-$fifres=0;
 ll_aff_contenu();
 
 ll_aff_pied();
@@ -41,39 +38,18 @@ function ll_aff_contenu() {
 }
 
 function ll_aff_section($redac){
-  global $chef,$violons,$fifres;
+  global $section;
   foreach ($redac as $key => $value) {
-    if ($value["reCategorie"]==1){
-      if($chef==0){
-        echo '<section>',
-               '<h2>Notre rédacteur en chef</h2>';
-        $chef=1;
+    if($value['utStatut']==1 ||$value['utStatut']==3 ){
+      if($section!=ucfirst($value["catLibelle"])){
+        if($section!="null"){
+          echo '</section>';
+        }
+        $section=ucfirst($value["catLibelle"]);
+        echo "<section><h2>",$section,"</h2>";
       }
-      ll_aff_redacteur_chef($value);
-      if($redac[$key+1]['reCategorie']!=1){
-        echo '</section>';
-      }
-    }
-    if ($value["reCategorie"]==2){
-      if($violons==0){
-        echo '<section>',
-               '<h2>Nos premiers violons</h2>';
-        $violons=1;
-      }
-      ll_aff_redacteur($value);
-      if($redac[$key+1]['reCategorie']!=2){
-        echo '</section>';
-      }
-    }
-    if ($value["reCategorie"]==3){
-      if($fifres==0){
-        echo '<section>',
-               '<h2>Nos sous-fifre</h2>';
-        $fifres=1;
-      }
-      ll_aff_redacteur($value);
-      if($redac[$key+1]['reCategorie']!=3){
-        echo '</section>';
+      if(!empty($value["reBio"])){
+        ll_aff_redacteur($value);
       }
     }
   }
@@ -102,7 +78,7 @@ function ll_aff_redacteur($redac){
   }
   echo      '<article class="redacteur" id="',$redac['rePseudo'],'">',
                 '<img src=',$img,' width="150" height="200" alt="',$redac['utPrenom'],' ',$redac['utNom'],'">',
-                '<h3>',$redac['utPrenom'],' ',$redac['utNom'],'</h3>';
+                '<h3>',ucfirst($redac['utPrenom']),' ',ucfirst($redac['utNom']),'</h3>';
   if(!is_null($redac['reFonction'])){
     echo        '<h4>',$redac['reFonction'],'</h4>';
   }
@@ -114,12 +90,12 @@ function ll_aff_redacteur($redac){
 
 //retourne un tableau associatif avec tous les redacteurs et leur attributs (nom,prenom,bio...)
 function ll_get_redacteur($bd){
-  $sql="SELECT rePseudo, utPrenom, utNom, reBio, reCategorie, reFonction FROM redacteur, utilisateur WHERE rePseudo=utPseudo ORDER BY reCategorie ASC";
+  $sql="SELECT rePseudo, utPrenom, utNom,utStatut, reBio, reCategorie, reFonction, catLibelle FROM redacteur, utilisateur, categorie WHERE rePseudo=utPseudo AND reCategorie=catID ORDER BY reCategorie ASC";
   $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
   $l=mysqli_num_rows($res);
   $i=0;
   $tab=array();
-  while($i<=$l){
+  while($i<$l){
     $tab[$i]=mysqli_fetch_assoc($res);
     $i=$i+1;
   }
