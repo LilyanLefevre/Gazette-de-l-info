@@ -13,6 +13,9 @@ session_start();
 ll_verifie_authentification();
 
 $bd = ll_bd_connecter();
+if( !ll_parametres_controle('get', array('id') , array())) {
+   ll_session_exit();
+}
 
 //recupère l'auteur du commentaire
 $sql="SELECT coAuteur FROM commentaire WHERE coID = '{$_GET['id']}'";

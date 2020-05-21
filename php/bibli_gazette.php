@@ -368,4 +368,60 @@ function ll_get_categorie($bd){
 
   return $tab;
 }
+/**
+  * fonction qui affiche les erreurs ou le succès du traitement qui a eu lieu
+  *
+  * @param Array $erreurs, tableau avec des chaines qui contiennent les
+  * erreurs commises
+  * @param Integer $success, entier qui vaut 1 en cas de succès de la soumission
+  * du formulaire et 0 sinon
+  */
+function ll_aff_erreur_success($erreurs,$success){
+  //affichage des éventuelles erreurs commises lors de la soumission du formulaire
+  if ($erreurs) {
+      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de vos modifications :<ul>';
+      foreach ($erreurs as $err) {
+          echo '<li>', $err, '</li>';
+      }
+      echo '</ul></div>';
+  }
+
+  //affichage de l'éventuel succès de l'opération efféctuée
+  if($success==1){
+    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
+    echo '</ul></div>';
+  }
+}
+
+
+/**
+  * fonction qui verifie le format et l'extension d'une image
+  *
+  * @param String $chemin le chemin de l'images
+  * @param Int $la la ratio de la largeur
+  * @param Int $lo le ratio de la longueur
+  * @param Int $extension : 1 = GIF, 2 = JPG,3 = PNG, 4 = SWF...
+  *
+  * @return Boolean vrai si le format et l'extension sont bons
+  */
+function ll_verif_img($chemin,$la,$lo,$extension){
+  $infos_image = @getImageSize($chemin); // info sur la dimension de l'image
+
+  // '@' est placé devant la fonction getImageSize()pour empêcher l'affichage
+  // des erreurs si l'image est absente.
+
+   //dimension
+   $largeur = $infos_image[0]; // largeur de l'image
+   $hauteur = $infos_image[1]; // hauteur de l'image
+   $type    = $infos_image[2]; // Type de l'image
+  if($type!=$extension){
+    return FALSE;
+  }
+
+  if((int)($largeur/$la)!=(int)($hauteur/$lo)){
+    return FALSE;
+  }
+
+  return TRUE;
+}
 ?>

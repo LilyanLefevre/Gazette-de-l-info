@@ -275,6 +275,9 @@ function ll_mb_ucfirst_lcremainder($str) {
   */
 function ll_traitement_ajout($bd){
   $erreursAjout=array();
+  if( !ll_parametres_controle('post', array('btnAjout','commentaire') , array())) {
+     ll_session_exit();
+  }
   $commentaire = mysqli_real_escape_string($bd,trim($_POST['commentaire']));
 
   //verification du texte du commentaire

@@ -9,7 +9,7 @@ ob_start();
 // démarrage de la session
 session_start();
 $section="null";
-ll_aff_entete('L\'Actu', 'L\'Actu');
+ll_aff_entete('La redac\'', 'La redac\'');
 ll_aff_contenu();
 
 ll_aff_pied();

@@ -342,6 +342,10 @@ function ll_traitement_info_perso($bd) {
 
     $erreursInfoPerso = array();
 
+    if( !ll_parametres_controle('post', array('btnInfoPerso','nom','prenom','naissance_a','naissance_j','naissance_m','email') , array('radSexe','cbSpam'))) {
+       ll_session_exit();
+    }
+
     // vérification de la civilité
     if (! isset($_POST['radSexe'])){
         $erreursInfoPerso[] = 'Vous devez choisir une civilité.';
@@ -458,6 +462,9 @@ function ll_traitement_info_perso($bd) {
  */
  function ll_traitement_mdp($bd){
   $erreursMdp=array();
+  if( !ll_parametres_controle('post', array('passe1','passe2','btnMdp') , array())) {
+     ll_session_exit();
+  }
   // vérification des mots de passe
   $passe1 = trim($_POST['passe1']);
   $passe2 = trim($_POST['passe2']);
@@ -488,6 +495,10 @@ function ll_traitement_info_perso($bd) {
  */
 function ll_traitement_redac($bd){
   $erreursRedac=array();
+  if( !ll_parametres_controle('post', array('btnRedac','bio','fonction','categorie') , array())) {
+     ll_session_exit();
+  }
+
   // vérification des champs saisis
   $bio = mysqli_real_escape_string($bd,trim($_POST['bio']));
   $fonction =mysqli_real_escape_string($bd,trim($_POST['fonction']));
@@ -530,17 +541,37 @@ function ll_traitement_redac($bd){
 function ll_traitement_img($bd){
   $erreursImg=array();
 
-  //on vérifie la présence d'un fichier
-  if (empty($_FILES)) {
-      $erreursImg[] = 'La photo doit être au format .jpg.';
+  if( !ll_parametres_controle('post', array('btnImg') , array())) {
+     ll_session_exit();
   }
+
+  //on vérifie la présence d'un fichier
+  if (empty($_FILES['img']['name'])) {
+      $erreursImg[] = 'Il doit y avoir une image.';
+  }
+
+  if($_FILES['img']['size']>1000000){
+    $erreursImg[] = 'La photo doit faire 1Mo maximum.';
+  }
+
+  //2 correspond au format JPG
+  if(ll_verif_img($_FILES['img']['tmp_name'],3,4,2)==FALSE){
+    $erreursImg[] = 'La photo doit être au format .jpg et être au format 3:4.';
+  }
+
   $tmp_name=$_FILES["img"]["tmp_name"];
+
+  // si erreurs --> retour
+  if (count($erreursImg) > 0) {
+      return $erreursImg;   //===> FIN DE LA FONCTION
+  }
+
   //on déplace le fichier dans ../upload/
   $b=move_uploaded_file($tmp_name, "../upload/".$_SESSION['user']['pseudo'].'.jpg');
 
   //on vérifie que le fichier ait bien été téléchargé sur le serveur
   if($b==false){
-    $erreursImg[]='Echec du téléchargement de l\image.';
+    $erreursImg[]='Echec du téléchargement de l\'image.';
   }
 
   // si erreurs --> retour
@@ -618,30 +649,5 @@ function ll_verif_categorie($bd,$id){
       return true;
     }
     return false;
-}
-
-/**
-  * fonction qui affiche les erreurs ou le succès du traitement qui a eu lieu
-  *
-  * @param Array $erreurs, tableau avec des chaines qui contiennent les
-  * erreurs commises
-  * @param Integer $success, entier qui vaut 1 en cas de succès de la soumission
-  * du formulaire et 0 sinon
-  */
-function ll_aff_erreur_success($erreurs,$success){
-  //affichage des éventuelles erreurs commises lors de la soumission du formulaire
-  if ($erreurs) {
-      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de vos modifications :<ul>';
-      foreach ($erreurs as $err) {
-          echo '<li>', $err, '</li>';
-      }
-      echo '</ul></div>';
-  }
-
-  //affichage de l'éventuel succès de l'opération efféctuée
-  if($success==1){
-    echo '<div class="success">Changement(s) effectué(s) avec succès.<ul>';
-    echo '</ul></div>';
-  }
 }
 ?>
