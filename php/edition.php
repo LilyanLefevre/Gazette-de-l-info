@@ -200,8 +200,11 @@ function ll_aff_formulaire_article($article,$erreursEdition,$erreursImg){
 
 
   echo '<table>';
-  echo '<label for="img">Choisir une photo d\'illustration : </label>
-        <input type="file" id="img" name="img" accept="image/jpeg">';
+  echo  '<tr>',
+         '<td><label for="img">Choisir une photo d\'illustration : </label></td>',
+         '<td><input type="file" id="img" name="img" accept="image/jpeg"></td>',
+        '</tr>';
+
 
   echo    '<tr>', '<td colspan="2">';
   echo    '</td></tr>',
@@ -212,8 +215,7 @@ function ll_aff_formulaire_article($article,$erreursEdition,$erreursImg){
               '</td>',
           '</tr>',
       '</table>',
-      '</form>',
-      '</section>';
+      '</form>';
 }
 
 
@@ -325,11 +327,11 @@ function ll_traitement_suppression($bd){
  * la supression d'un article
  */
 function ll_aff_dialog_delete(){
-  echo   '<a href="#openModal" class="bouton_dialog">Supprimer</a>
-          <div id="openModal" class="modalDialog">
-           <div>
-             <a href="#close" title="Close" class="close">X</a>
-             <p class="dialogtitle">Êtes-vous sûrs de vouloir supprimer cet article?</p>',
+  echo   '<a href="#openModal" class="bouton_dialog">Supprimer</a>',
+          '<div id="openModal" class="modalDialog">',
+           '<div>',
+             '<a href="#close" title="Close" class="close">X</a>',
+             '<p class="dialogtitle">Êtes-vous sûrs de vouloir supprimer cet article?</p>',
              '<form action="edition.php?id=',$_GET['id'],'" method="post">',
                  '<table>',
                       '<tr>',
@@ -341,7 +343,7 @@ function ll_aff_dialog_delete(){
                  '</table>',
               '</form>',
 
-           '</div>
-         </div>';
+           '</div>',
+         '</div>';
 }
  ?>

@@ -64,6 +64,7 @@ function ll_aff_section($redac){
       }
     }
   }
+  echo '</section>';
 }
 
 /**

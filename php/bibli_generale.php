@@ -404,13 +404,32 @@ function ll_aff_input_checkbox($libelle, $name, $value = 1, $attributs=array()){
     echo '> ', $libelle, '</label>';
 }
 
+/**
+  * fonction qui affiche un input de type textarea
+  *
+  * @param String $name le nom de l'input
+  * @param String $label la chaine à afficher devant le boutons
+  * @param Int $rows la $largeur
+  * @param Int cols la longueur
+  * @param String $value la valeur par $defaut
+  * @param String class la classe css du $label
+  * @param String class2 la classe css du bouton
+  */
 function ll_aff_input_textarea($name,$label,$rows,$cols,$value,$class='',$class2=''){
   echo    '<tr>';
             if(!empty($label)){
-              echo '<td class="',$class,'"><label for="',$name,'">',$label,'</label></td>';
+              if($class!=''){
+                echo '<td class="',$class,'"><label for="',$name,'">',$label,'</label></td>';
+              }else{
+                echo '<td><label for="',$name,'">',$label,'</label></td>';
+              }
             }
-  echo      '<td><textarea id="',$class2,'" name="',$name,'" rows="',$rows,'" cols="',$cols,'"">',$value,'</textarea></td>';
-          '</tr>';
+  if($class2!=''){
+    echo      '<td><textarea id="',$class2,'" name="',$name,'" rows="',$rows,'" cols="',$cols,'">',$value,'</textarea></td>';
+  }else{
+    echo      '<td><textarea name="',$name,'" rows="',$rows,'" cols="',$cols,'" id="',$name,'">',$value,'</textarea></td>';
+  }
+  echo        '</tr>';
 }
 
 ?>

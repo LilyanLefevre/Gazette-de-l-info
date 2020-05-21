@@ -263,14 +263,14 @@ function ll_aff_formulaire_mdp($erreursMdp){
 
   //affichage du formulaire
   echo '<table>';
-  echo    '<tr>
-            <td class="bio"><label for="bio">Modifier votre biographie:</label></td>
-            <td><textarea id="bio" name="bio" rows="10" cols="70"">',$bio,'</textarea></td>';
+  echo    '<tr>',
+            '<td class="bio"><label for="bio">Modifier votre biographie:</label></td>',
+            '<td><textarea id="bio" name="bio" rows="10" cols="70">',$bio,'</textarea></td>';
           '</tr>';
 
-  echo    '<tr>
-            <td class="bio"><label for="fonction">Modifier votre fonction:</label></td>
-            <td><textarea id="fonction" name="fonction" rows="5" cols="33"">',$fonction,'</textarea></td>';
+  echo    '<tr>',
+            '<td class="bio"><label for="fonction">Modifier votre fonction:</label></td>',
+            '<td><textarea id="fonction" name="fonction" rows="5" cols="33">',$fonction,'</textarea></td>';
           '</tr>';
   echo '<tr>', '<td>Votre catégorie :</td>', '<td>';
   ll_aff_liste_categorie($bd,'categorie',$categorie);
@@ -314,8 +314,10 @@ function ll_aff_formulaire_mdp($erreursMdp){
 
 
   echo '<table>';
-  echo '<label for="img">Choisir une photo de profil : </label>
-        <input type="file" id="img" name="img" accept="image/jpeg">';
+  echo '<tr>',
+         '<td><label for="img">Choisir une photo de profil :</label></td>',
+         '<td><input type="file" id="img" name="img" accept="image/jpeg"></td>',
+        '</tr>';
 
   echo    '<tr>', '<td colspan="2">';
   echo    '</td></tr>',

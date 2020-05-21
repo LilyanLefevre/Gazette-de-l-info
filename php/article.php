@@ -172,7 +172,6 @@ function ll_aff_article($connecte,$erreursAjout,$bd) {
             }
 
             echo        '</div>',
-                    '</p>',
                     '<blockquote>', $com, '</blockquote>',
                   '</li>
                 </div>';
