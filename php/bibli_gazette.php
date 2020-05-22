@@ -257,9 +257,7 @@ function bbcode_to_html($bbtext){
     "/\[a:https:(.*?)\](.*?)\[\/a\]/i" => "<a href=\"https:$1\" title=\"$2\">$2</a>",
     "/\[#(.*?)\]/i" => "&#$1",
     "/\[a:#(.*?)](.*?)\[\/a\]/i" => "<a href=\"#$1\">$2</a>",
-
-
-  );
+    );
 
   foreach($bbextended as $match=>$replacement){
     $bbtext = preg_replace($match, $replacement, $bbtext);

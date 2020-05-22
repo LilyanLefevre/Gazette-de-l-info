@@ -244,7 +244,7 @@ function ll_aff_formulaire_mdp($erreursMdp){
 
   // affectation des valeurs à afficher dans les zones du formulaire
   if (isset($_POST['btnRedac'])){
-      $bio = ll_html_proteger_sortie(trim($_POST['bio']));
+      $bio = trim($_POST['bio']);
       $categorie = ll_html_proteger_sortie(trim($_POST['categorie']));
       $fonction = ll_html_proteger_sortie(trim($_POST['fonction']));
   }else{
@@ -506,10 +506,8 @@ function ll_traitement_redac($bd){
   $fonction =mysqli_real_escape_string($bd,trim($_POST['fonction']));
   $categorie=(int)$_POST['categorie'];
 
-  //on verifie que la bio n'est pas vide
-  if(empty($bio)){
-    $erreursRedac[]="La biographie ne peut pas être vide.";
-  }
+  //on verifie la bio
+  ll_verifier_texte($bio, 'La biographie', $erreursRedac);
 
   //on vérifie que la catégorie existe
   if(!ll_verif_categorie($bd,$categorie)){

@@ -97,6 +97,7 @@ function ll_bar_recherche(){
   */
 function ll_construire_requete(){
   global $erreur;
+  $_POST['recherche']=mysqli_real_escape_string($_POST['recherche']);
 
   //si la chaine fait moins de 3 caractères -> erreur=1
   if(strlen($_POST["recherche"])<3){
