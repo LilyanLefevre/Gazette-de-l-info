@@ -55,17 +55,18 @@ function cbl_aff_form($erreurs) {
         '<main>',
         '<section>',
             '<h2>Formulaire nouvel article</h2>',
-            '<p>Pour créer un nouvel article, remplissez le formulaire ci-dessous.</p>',            
+            '<p>Pour créer un nouvel article, remplissez le formulaire ci-dessous.</p>',
             '<form action="nouveau.php" method="post" enctype="multipart/form-data">',
             '<input type="hidden" name="MAX_FILE_SIZE" value="1024000">';
 
-    if (isset($erreurs)) {
-        echo '<div class="erreur">';
-        foreach ($erreurs as $err) {
-            echo $err;   
-        }
-        echo '</div>';
-    }
+			//affichage des éventuelles erreurs commises lors de la soumission du formulaire
+		  if ($erreurs) {
+		      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de vos modifications :<ul>';
+		      foreach ($erreurs as $err) {
+		          echo '<li>', $err, '</li>';
+		      }
+		      echo '</ul></div>';
+		  }
 
     echo '<table>';
     ll_aff_ligne_input('text', 'Titre :', 'titre', $titre, array('required' => 0));
@@ -77,7 +78,7 @@ function cbl_aff_form($erreurs) {
             '<tr>',
                 '<td colspan="2">',
                     '<input type="submit" name="btnValider" value="Valider">',
-                    '<input type="reset" value="Annuler">', 
+                    '<input type="reset" value="Annuler">',
                 '</td>',
             '</tr>',
         '</table>',
@@ -107,7 +108,7 @@ function cbl_traitement_nouveau(){
 
 
 	if (isset($_FILES['imgArticle'])) {
-	
+
 		// Vérification si erreurs
 		$f = $_FILES['imgArticle'];
 		switch ($f['error']) {
@@ -127,7 +128,7 @@ function cbl_traitement_nouveau(){
 		return $erreurs;
 	}
 
-	
+
 
 	$bd = ll_bd_connecter();
 	$date=date('YmdHi');
@@ -139,7 +140,7 @@ function cbl_traitement_nouveau(){
 	$sql = "INSERT INTO `article` (`arID`, `arTitre`, `arResume`, `arTexte`, `arDatePublication`, `arDateModification`, `arAuteur`) VALUES (NULL, '{$titreSecu}', '{$resumeSecu}', '{$texteSecu}', '{$date}', NULL, '{$pseudo}');";
 	mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
 
-	$sql= "SELECT arID 
+	$sql= "SELECT arID
 	FROM article
 	WHERE arTitre='{$titreSecu}' AND arDatePublication='{$date}' AND arAuteur='{$pseudo}'";
 	$res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
