@@ -42,9 +42,9 @@ function cbl_aff_input_file($name,$label,$type='file'){
 function cbl_aff_form($erreurs) {
     // affectation des valeurs à afficher dans les zones du formulaire
     if (isset($_POST['btnValider'])){
-    	$titre = ll_html_proteger_sortie(trim($_POST['titre']));
-        $resumer = ll_html_proteger_sortie(trim($_POST['resume']));
-        $texte = ll_html_proteger_sortie(trim($_POST['texte']));
+    	$titre = (trim($_POST['titre']));
+        $resumer = (trim($_POST['resume']));
+        $texte = (trim($_POST['texte']));
     }else{
         $titre ='';
         $resumer ='';
@@ -120,9 +120,13 @@ function cbl_traitement_nouveau(){
 			$erreurs[] = 'Erreur de transfert de '.$f['name'];
 			break;
 		case 4:
-			$erreurs[] = $f['name'].' introuvable.';
+			$erreurs[] = 'Image introuvable.';
 		}
 	}
+	//2 correspond au format JPG
+  if(ll_verif_img($_FILES['imgArticle']['tmp_name'],4,3,2)==FALSE){
+    $erreurs[] = 'La photo doit être au format .jpg et être au format 4:3.';
+  }
 
 	if(count($erreurs)>0){
 		return $erreurs;

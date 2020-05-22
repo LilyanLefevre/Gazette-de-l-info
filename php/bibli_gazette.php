@@ -291,6 +291,7 @@ function ll_verifier_texte($texte, $nom, &$erreurs, $long = -1){
     }
 }
 
+
 //___________________________________________________________________
 /**
  * Vérification des champs texte, resume et titre

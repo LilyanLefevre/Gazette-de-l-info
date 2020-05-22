@@ -507,7 +507,7 @@ function ll_traitement_redac($bd){
   $categorie=(int)$_POST['categorie'];
 
   //on verifie la bio
-  ll_verifier_texte($bio, 'La biographie', $erreursRedac);
+  ll_verifier_texte_article($bio, 'La biographie', $erreursRedac);
 
   //on vérifie que la catégorie existe
   if(!ll_verif_categorie($bd,$categorie)){
