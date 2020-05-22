@@ -30,7 +30,7 @@ function ll_aff_contenu() {
   if(isset($_POST["recherche"])){
 
     //on construit la requete
-    $rec=ll_construire_requete();
+    $rec=ll_construire_requete($bd);
 
     //si la requete n'est pas nulle on l'exécute
     if($rec!=''){
@@ -95,9 +95,9 @@ function ll_bar_recherche(){
   * @return String si pas d'erreurs retourne la requete sql, une chaine
   * vide sinon
   */
-function ll_construire_requete(){
+function ll_construire_requete($bd){
   global $erreur;
-  $_POST['recherche']=mysqli_real_escape_string($_POST['recherche']);
+  $_POST['recherche']=mysqli_real_escape_string($bd,$_POST['recherche']);
 
   //si la chaine fait moins de 3 caractères -> erreur=1
   if(strlen($_POST["recherche"])<3){
