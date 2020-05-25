@@ -92,7 +92,12 @@ ob_end_flush();
   * @return Array $res, tableau associatif avec les infos de l'utilisateur
   */
 function ll_info_user($bd){
-  $sql="SELECT * FROM utilisateur,redacteur where utPseudo='{$_SESSION["user"]["pseudo"]}' AND utPseudo=rePseudo";
+
+  if($_SESSION['user']['redacteur']==true){
+    $sql="SELECT * FROM utilisateur,redacteur where utPseudo='{$_SESSION["user"]["pseudo"]}' AND utPseudo=rePseudo";
+  }else{
+    $sql="SELECT * FROM utilisateur where utPseudo='{$_SESSION["user"]["pseudo"]}' ";
+  }
   $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
   $res=mysqli_fetch_assoc($res);
   return $res;

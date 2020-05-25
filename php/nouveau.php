@@ -54,7 +54,7 @@ function cbl_aff_form($erreurs) {
      echo
         '<main>',
         '<section>',
-            '<h2>Formulaire nouvel article</h2>',
+            '<h2>Nouvel article</h2>',
             '<p>Pour créer un nouvel article, remplissez le formulaire ci-dessous.</p>',
             '<form action="nouveau.php" method="post" enctype="multipart/form-data">',
             '<input type="hidden" name="MAX_FILE_SIZE" value="1024000">';
@@ -70,8 +70,8 @@ function cbl_aff_form($erreurs) {
 
     echo '<table>';
     ll_aff_ligne_input('text', 'Titre :', 'titre', $titre, array('required' => 0));
-    ll_aff_input_textarea('resume','Résumer',4,40,$resumer);
-    ll_aff_input_textarea('texte','Texte',10,60,$texte);
+    ll_aff_input_textarea('resume','Résumé :',4,40,$resumer,'editer');
+    ll_aff_input_textarea('texte','Texte :',10,60,$texte,'editer');
     cbl_aff_input_file('imgArticle','Image de l\'article');
 
     echo    '</td></tr>',
@@ -95,11 +95,11 @@ function cbl_traitement_nouveau(){
         ll_session_exit();
     }
 
-    $titre = trim($_POST['titre']);
-    $resume = trim($_POST['resume']);
-    $texte = trim($_POST['texte']);
+  $titre = trim($_POST['titre']);
+  $resume = trim($_POST['resume']);
+  $texte = trim($_POST['texte']);
 
-  	$erreurs = array();
+	$erreurs = array();
 
 	ll_verifier_texte_article($titre,'Le titre',$erreurs);
 	ll_verifier_texte_article($resume,'Le résumer',$erreurs);
