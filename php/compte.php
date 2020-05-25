@@ -152,12 +152,6 @@ function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
         $mails_pourris = $user['utMailsPourris'];
     }
 
-    if($civilite=="h"){
-      $civilite=1;
-    }else{
-      $civilite=2;
-    }
-
     echo
         '<section>',
             '<h2>Informations personnelles</h2>',
