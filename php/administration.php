@@ -50,7 +50,7 @@ function cbl_aff_admin($erreur){
 $bd = ll_bd_connecter();
 $pseudo=mysqli_real_escape_string($bd, $_SESSION['user']['pseudo']);
 
-$sql ="SELECT utPseudo, utStatut,COUNT(coAuteur),COUNT(arAuteur),nbCom
+$sql ="SELECT utPseudo, utStatut,COUNT(DISTINCT coID),COUNT(arAuteur),nbCom
 FROM `utilisateur` 
 LEFT OUTER JOIN `commentaire` ON utPseudo = coAuteur
 LEFT OUTER JOIN `article` ON utPseudo = arAuteur
@@ -91,7 +91,7 @@ while($fetch=mysqli_fetch_assoc($res)){
 	echo '<tr>',
 	'<td>',ll_html_proteger_sortie($fetch['utPseudo']),'</td>',
 	'<td>',ll_cbl_aff_liste_modifie(ll_html_proteger_sortie($fetch['utPseudo']),$statut,ll_html_proteger_sortie($fetch['utStatut'])),'</td>',
-	'<td>',ll_html_proteger_sortie($fetch['COUNT(coAuteur)']),'</td>',
+	'<td>',ll_html_proteger_sortie($fetch['COUNT(DISTINCT coID)']),'</td>',
 	'<td>',ll_html_proteger_sortie($fetch['COUNT(arAuteur)']),'</td>';
 	if(ll_html_proteger_sortie($fetch['COUNT(arAuteur)'])!=0){
 		echo '<td>',ll_html_proteger_sortie($fetch['nbCom'])/(double)ll_html_proteger_sortie($fetch['COUNT(arAuteur)']),'</td>';
