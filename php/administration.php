@@ -19,7 +19,7 @@ if(!ll_verifie_authentification() || $_SESSION['user']['administrateur']!=true){
 ll_aff_entete('Administration', 'Administration');
 
 if(isset($_POST['btnValider'])){
-	$erreurs=cbl_traitement_admin();
+	cbl_traitement_admin();
 }
 
 cbl_aff_admin();
@@ -71,7 +71,7 @@ $statut[3]='Rédacteur et administrateur';
 echo
          '<section>',
             '<h2>Liste des utilisateurs</h2>',
-            '<form>',
+            '<form action="administration.php" method="POST">',
             '<table id="listeUtilisateurs">',
             '<tr>',
 			    '<td>Pseudo</td>',
@@ -84,7 +84,7 @@ echo
 while($fetch=mysqli_fetch_assoc($res)){
 	echo '<tr>',
 	'<td>',ll_html_proteger_sortie($fetch['utPseudo']),'</td>',
-	'<td>',ll_cbl_aff_liste_modifie('statut',$statut,ll_html_proteger_sortie($fetch['utStatut'])),'</td>',
+	'<td>',ll_cbl_aff_liste_modifie(ll_html_proteger_sortie($fetch['utPseudo']),$statut,ll_html_proteger_sortie($fetch['utStatut'])),'</td>',
 	'<td>',ll_html_proteger_sortie($fetch['COUNT(coAuteur)']),'</td>',
 	'<td>',ll_html_proteger_sortie($fetch['COUNT(arAuteur)']),'</td>';
 	if(ll_html_proteger_sortie($fetch['COUNT(arAuteur)'])!=0){
@@ -106,8 +106,24 @@ while($fetch=mysqli_fetch_assoc($res)){
         '</form>',
         '</section></main>';
 
+	mysqli_free_result($res);
+	mysqli_close($bd);
 }
 
+
+function cbl_traitement_admin(){
+
+	$bd = ll_bd_connecter();
+
+	foreach ($_POST as $key => $value) {
+		$pseudo=$key;
+		$sql="UPDATE utilisateur SET utStatut = '{$value}' WHERE utPseudo = '{$pseudo}'";
+		mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+	}
+
+	mysqli_close($bd);
+	
+}
 
 
 ?>
