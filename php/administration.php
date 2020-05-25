@@ -50,6 +50,7 @@ function cbl_aff_admin($erreur){
 $bd = ll_bd_connecter();
 $pseudo=mysqli_real_escape_string($bd, $_SESSION['user']['pseudo']);
 
+
 $sql ="SELECT utPseudo, utStatut,COUNT(DISTINCT coID),COUNT(arAuteur),nbCom
 FROM `utilisateur` 
 LEFT OUTER JOIN `commentaire` ON utPseudo = coAuteur
@@ -65,12 +66,12 @@ ORDER BY utStatut DESC
 ";
 
 $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
-$statut[0]='Pas de droit';
+$statut[0]='Utilisateur simple';
 $statut[1]='Rédacteur';
 $statut[2]='Administrateur';
 $statut[3]='Rédacteur et administrateur';
 
-echo
+echo   '<main>',
          '<section>',
             '<h2>Liste des utilisateurs</h2>';
 
