@@ -70,7 +70,7 @@ function ll_aff_menu($pseudo='', $droits = array(false, false), $prefix = '..') 
                 '<ul>',
                     '<li><a href="', $prefix, '/php/compte.php">Mon profil</a></li>',
                     $droits[0] ? "<li><a href=\"{$prefix}/php/nouveau.php\">Nouvel article</a></li>" : '',
-                    $droits[1] ? "<li><a href=\"{$prefix}/php/admin.php\">Administration</a></li>" : '',
+                    $droits[1] ? "<li><a href=\"{$prefix}/php/administration.php\">Administration</a></li>" : '',
                     '<li><a href="', $prefix, '/php/deconnexion.php">Se déconnecter</a></li>',
                 '</ul>';
     }

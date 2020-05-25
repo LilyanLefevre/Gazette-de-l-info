@@ -485,6 +485,27 @@ section > a:hover > img {
     width: 100px;
 }
 
+/** Tableau utilisateur  **/
+#listeUtilisateurs {
+    width: 700px;
+    margin: 10px auto;
+    font-size: 14px;
+}
+
+#listeUtilisateurs tr {
+    height: 30px;
+}
+
+#listeUtilisateurs td {
+    padding: 5px 10px;
+    border: solid 1px #000;
+    text-align:center;
+}
+
+#listeUtilisateurs tr:last-of-type td:last-of-type {
+    border: 0px; 
+}
+
 
 /****************************************************************
         Formulaire d'inscription
