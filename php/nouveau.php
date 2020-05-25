@@ -135,6 +135,8 @@ function cbl_traitement_nouveau(){
 
 
 	$bd = ll_bd_connecter();
+	//on récupère la date actuelle
+  date_default_timezone_set('Europe/Paris');
 	$date=date('YmdHi');
 	$titreSecu=mysqli_real_escape_string($bd, $titre);
 	$resumeSecu=mysqli_real_escape_string($bd, $resume);

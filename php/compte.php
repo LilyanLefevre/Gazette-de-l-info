@@ -151,6 +151,12 @@ function ll_aff_formulaire_infos($erreursInfoPerso,$user,$bd) {
         $civilite = $user['utCivilite'];
         $mails_pourris = $user['utMailsPourris'];
     }
+    if($civilite=='h'){
+      $civilite=1;
+    }
+    if($civilite=='f'){
+      $civilite=2;
+    }
 
     echo
         '<section>',

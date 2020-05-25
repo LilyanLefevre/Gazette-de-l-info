@@ -299,7 +299,11 @@ function ll_traitement_edition($bd){
       return $erreursEdition;   //===> FIN DE LA FONCTION
   }
 
-  $sql = "UPDATE `article` SET `arTitre`='{$titre}',`arResume`='{$resume}',`arTexte`='{$texte}' WHERE arID='{$_GET['id']}'";
+  //on récupère la date actuelle
+  date_default_timezone_set('Europe/Paris');
+  $today = date("YmdHi");
+
+  $sql = "UPDATE `article` SET `arTitre`='{$titre}',`arResume`='{$resume}',`arTexte`='{$texte}', `arDateModification`='{$today}' WHERE arID='{$_GET['id']}'";
   mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
 
 }
