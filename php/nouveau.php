@@ -30,6 +30,12 @@ ll_aff_pied();
 ob_end_flush(); //FIN DU SCRIPT
 
 
+/**
+	* fonction qui affiche un input de type File
+	*
+	* @param String $name nom de l'input
+	* @param String $label texte à afficher devant le bouton
+	*/
 function cbl_aff_input_file($name,$label,$type='file'){
 	echo '<tr>',
 	'<td><label for="',$name,'">',$label,'</label></td>',
@@ -39,6 +45,11 @@ function cbl_aff_input_file($name,$label,$type='file'){
 	'</tr>';
 }
 
+/**
+	* fonction qui affiche le formulaire de la page nouveau
+	*
+	* @param array String $erreurs tableau des éventuelles erreurs à afficher
+	*/
 function cbl_aff_form($erreurs) {
     // affectation des valeurs à afficher dans les zones du formulaire
     if (isset($_POST['btnValider'])){
@@ -68,6 +79,7 @@ function cbl_aff_form($erreurs) {
 		      echo '</ul></div>';
 		  }
 
+		//affichage du formulaire
     echo '<table>';
     ll_aff_ligne_input('text', 'Titre :', 'titre', $titre, array('required' => 0));
     ll_aff_input_textarea('resume','Résumé :',4,40,$resumer,'editer');
@@ -88,6 +100,10 @@ function cbl_aff_form($erreurs) {
 
 
 
+/**
+	* fonction qui effectue le traitement de la page nouveau
+	*
+	*/
 function cbl_traitement_nouveau(){
 
 	  //verification des clés présentent dans POST
@@ -95,18 +111,20 @@ function cbl_traitement_nouveau(){
         ll_session_exit();
     }
 
+	//on récupère les valeurs soumises
   $titre = trim($_POST['titre']);
   $resume = trim($_POST['resume']);
   $texte = trim($_POST['texte']);
 
 	$erreurs = array();
 
+	//on vérifie les zones de texte
 	ll_verifier_texte_article($titre,'Le titre',$erreurs);
 	ll_verifier_texte_article($resume,'Le résumer',$erreurs);
 	ll_verifier_texte_article($texte,'Le texte',$erreurs);
 
 
-
+	//verification de l'image
 	if (isset($_FILES['imgArticle'])) {
 
 		// Vérification si erreurs
@@ -123,39 +141,45 @@ function cbl_traitement_nouveau(){
 			$erreurs[] = 'Image introuvable.';
 		}
 	}
+
+	//verification du format de l'image
 	//2 correspond au format JPG
   if(ll_verif_img($_FILES['imgArticle']['tmp_name'],4,3,2)==FALSE){
     $erreurs[] = 'La photo doit être au format .jpg et être au format 4:3.';
   }
 
+	//s'il y a des erreurs, on retourne le tableau d'erreurs
 	if(count($erreurs)>0){
 		return $erreurs;
 	}
 
-
-
 	$bd = ll_bd_connecter();
+
 	//on récupère la date actuelle
   date_default_timezone_set('Europe/Paris');
 	$date=date('YmdHi');
+
+	//on sécurise les entrées dans la bd
 	$titreSecu=mysqli_real_escape_string($bd, $titre);
 	$resumeSecu=mysqli_real_escape_string($bd, $resume);
 	$texteSecu=mysqli_real_escape_string($bd, $texte);
 	$pseudo=mysqli_real_escape_string($bd, $_SESSION['user']['pseudo']);
 
+	//on envoie le nouvel article dans la bd
 	$sql = "INSERT INTO `article` (`arID`, `arTitre`, `arResume`, `arTexte`, `arDatePublication`, `arDateModification`, `arAuteur`) VALUES (NULL, '{$titreSecu}', '{$resumeSecu}', '{$texteSecu}', '{$date}', NULL, '{$pseudo}');";
 	mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
 
+	//on vérifie que l'article a bien été ajouté
 	$sql= "SELECT arID
-	FROM article
-	WHERE arTitre='{$titreSecu}' AND arDatePublication='{$date}' AND arAuteur='{$pseudo}'";
+				 FROM article
+				 WHERE arTitre='{$titreSecu}' AND arDatePublication='{$date}' AND arAuteur='{$pseudo}'";
 	$res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
 
 	if(mysqli_num_rows($res)<1){
 		return $erreurs[]='L\'insertion de l\'article dans la base de donnée a échoué';
 	}
 
-
+	//si on a ajouté une image, on la déplace sur le serveur
 	if (isset($_FILES['imgArticle'])){
 		// Pas d'erreur => placement du fichier
 		if (! @is_uploaded_file($f['tmp_name'])) {
