@@ -52,7 +52,7 @@ $pseudo=mysqli_real_escape_string($bd, $_SESSION['user']['pseudo']);
 
 
 $sql ="SELECT utPseudo, utStatut,COUNT(DISTINCT coID),COUNT(arAuteur),nbCom
-FROM `utilisateur` 
+FROM `utilisateur`
 LEFT OUTER JOIN `commentaire` ON utPseudo = coAuteur
 LEFT OUTER JOIN `article` ON utPseudo = arAuteur
 LEFT OUTER JOIN (
