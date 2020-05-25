@@ -126,6 +126,10 @@ echo    '</section>';
  * @return Array un tableau avec toutes les infos sur l'article actuel
  */
 function ll_verifie_auteur($bd){
+  if($_SESSION['user']['redacteur']==false){
+    header("Location: ../index.php");
+    exit();
+  }
   $sql="SELECT arAuteur, arTexte, arTitre,arResume FROM article WHERE arID={$_GET['id']}";
   $res = mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
 

@@ -98,7 +98,7 @@ function ll_aff_article($connecte,$erreursAjout,$bd) {
 
     //on affiche la rubrique modification de l'article si on en est l'auteur
     if(isset($_SESSION['user'])){
-      if($tab['arAuteur']==$_SESSION['user']['pseudo']){
+      if($tab['arAuteur']==$_SESSION['user']['pseudo'] && $_SESSION['user']['redacteur']==true){
         ll_aff_modifier();
       }
     }
