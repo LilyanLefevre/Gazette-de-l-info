@@ -18,11 +18,13 @@ if(!ll_verifie_authentification() || $_SESSION['user']['administrateur']!=true){
 // génération de la page
 ll_aff_entete('Administration', 'Administration');
 
+$erreur=NULL;
 if(isset($_POST['btnValider'])){
-	cbl_traitement_admin();
+	$erreur=cbl_traitement_admin();
 }
 
-cbl_aff_admin();
+
+cbl_aff_admin($erreur);
 
 ll_aff_pied();
 
@@ -43,7 +45,7 @@ function ll_cbl_aff_liste_modifie($nom, $options, $defaut) {
     echo '</select>';
 }
 
-function cbl_aff_admin(){
+function cbl_aff_admin($erreur){
 
 $bd = ll_bd_connecter();
 $pseudo=mysqli_real_escape_string($bd, $_SESSION['user']['pseudo']);
@@ -70,8 +72,12 @@ $statut[3]='Rédacteur et administrateur';
 
 echo   '<main>',
          '<section>',
-            '<h2>Liste des utilisateurs</h2>',
-            '<form action="administration.php" method="POST">',
+            '<h2>Liste des utilisateurs</h2>';
+
+	if(isset($erreur)){
+		echo '<p>',$erreur,'</p>';
+    }
+echo '<form action="administration.php" method="POST">',
             '<table id="listeUtilisateurs">',
             '<tr>',
 			    '<td>Pseudo</td>',
@@ -122,7 +128,8 @@ function cbl_traitement_admin(){
 	}
 
 	mysqli_close($bd);
-	
+
+	return 'Elément(s) modifié';
 }
 
 
