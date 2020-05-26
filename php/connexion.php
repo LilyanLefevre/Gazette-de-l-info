@@ -121,13 +121,13 @@ function cbl_aff_form($erreurs) {
 
     //si il y a des erreurs repérées, on les affiche
     if ($erreurs) {
-        echo '<div class="erreur">';
-        foreach ($erreurs as $err) {
-            echo $err;
-        }
-        echo '</div>';
+      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de votre connexion :<ul>';
+      foreach ($erreurs as $err) {
+          echo '<li>', $err, '</li>';
+      }
+      echo '</ul></div>';
     }
-    
+
     echo '<table>';
     ll_aff_ligne_input('text', 'Pseudo :', 'pseudo', $pseudo, array('required' => 0));
     ll_aff_ligne_input('password', 'Mot de passe :', 'passe', '', array('required' => 0));
