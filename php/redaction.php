@@ -59,7 +59,7 @@ function ll_aff_section($redac){
         echo "<section><h2>",$section,"</h2>";
       }
       //si sa bio n'est pas vide on affiche l'utilisateur
-      if(!empty($value["reBio"])){
+      if($value["reBio"]!=''){
         ll_aff_redacteur($value);
       }
     }

@@ -134,9 +134,20 @@ function cbl_traitement_admin(){
 		$pseudo=$key;
 		$sql="UPDATE utilisateur SET utStatut = '{$value}' WHERE utPseudo = '{$pseudo}'";
 		mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+
+		//on insert l'utilisateur dans la table rédacteur s'il passe rédacteur
 		if($value==1 || $value==3){
-			$sql="INSERT INTO `redacteur`(`rePseudo`, `reBio`, `reCategorie`, `reFonction`) VALUES ('{$pseudo}',' ','1',NULL)";
-			mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+
+			//on vérifie d'abord qu'il n'existe pas dans rédacteur
+			$sql="SELECT * FROM redacteur WHERE rePseudo='{$pseudo}'";
+		 	$res=mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+
+			//si aucun résultat, alors on ajoute l'utilisateur dans la table Redacteur
+			if(mysqli_num_rows($res)==0){
+				$sql="INSERT INTO `redacteur`(`rePseudo`, `reBio`, `reCategorie`, `reFonction`) VALUES ('{$pseudo}','','1',NULL)";
+				mysqli_query($bd, $sql) or ll_bd_erreur($bd, $sql);
+			}
+
 		}
 	}
 
