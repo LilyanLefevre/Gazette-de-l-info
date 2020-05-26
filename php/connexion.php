@@ -121,11 +121,11 @@ function cbl_aff_form($erreurs) {
 
     //si il y a des erreurs repérées, on les affiche
     if ($erreurs) {
-      echo '<div class="erreur">Les erreurs suivantes ont été relevées lors de votre connexion :<ul>';
+      echo '<div class="erreur">';
       foreach ($erreurs as $err) {
-          echo '<li>', $err, '</li>';
+          echo  $err;
       }
-      echo '</ul></div>';
+      echo '</div>';
     }
 
     echo '<table>';
