@@ -328,6 +328,9 @@ function ll_traitement_suppression($bd){
   //ensuite on peut supprimer l'article
   $sql2 = "DELETE FROM `article` WHERE arID='{$_GET['id']}'";
   mysqli_query($bd, $sql2) or ll_bd_erreur($bd, $sql2);
+
+  //on supprime l'image sur le serveur
+  unlink("../upload/".$_GET['id'].'.jpg');
 }
 
 /**
